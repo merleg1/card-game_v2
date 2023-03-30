@@ -21,12 +21,14 @@ io.on('connection', (socket) => {
     console.log('New connection from ' + socket.id);
 
     socket.on('createRoom', (data) => {
+        console.log("Creating room for " + data.nickname);
         let roomId = nanoid(8);
         socket.join(roomId);
         rooms.push(new Room(roomId));
     });
 
     socket.on('joinRoom', (data) => {
+        console.log("Joining room " + data.roomCode + " for " + data.nickname);
         socket.join(data.roomId);
     });
 
