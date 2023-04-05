@@ -1,30 +1,61 @@
+<template>
+    <div class="q-pa-md create-room-form">
+        <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+            <div class="text-h4">Create a new room</div>
+            <q-input filled v-model="nickname" label="Your nickname *" hint="A descriptive name" lazy-rules :rules="[
+                val => val != '' || 'Please type your nickname',
+                val => val && val.length >= nicknameMinLength && val.length <= nicknameMaxLength || 'Your nickname must be between ' + nicknameMinLength + ' and ' + nicknameMaxLength + ' characters'
+            ]" />
+
+            <div>
+                <q-btn label="Submit" type="submit" color="primary" />
+                <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+            </div>
+        </q-form>
+        <div class="go-back"><router-link to="/"><q-icon name="arrow_back" /> Go back</router-link></div>
+
+    </div>
+</template>
+
+<style>
+.create-room-form {
+    width: 600px;
+}
+
+.go-back {
+    margin-top: 2em;
+}
+</style>
+
 <script>
 import { socket } from "../socket";
+import { useQuasar } from 'quasar'
 
 export default {
-    name: 'CreateRoom',
     data: function () {
         return {
-            nickname: ''
+            nicknameMaxLength: 12,
+            nicknameMinLength: 4,
+            nickname: '',
+            $q: useQuasar()
         };
     },
     methods: {
-        createRoom: function () {
+        onSubmit() {
+            this.$q.notify({
+                color: 'green-4',
+                textColor: 'white',
+                icon: 'cloud_done',
+                message: 'Submitted'
+            })
             socket.emit("createRoom", { nickname: this.nickname });
+            console.log('onSubmit');
+        },
+        onReset() {
+            this.nickname = '';
         }
-    }
+    },
+
+
 }
 </script>
-
-<template>
-    <div>
-        <h2>Create a new Room</h2>
-        <div class="form-group">
-            <label for="nickname">Nickname</label>
-            <input type="text" class="form-control" id="nickname" placeholder="Enter nickname" v-model="nickname">
-        </div>
-        <button class="btn btn-primary" @click="createRoom">Create room</button>
-        <br>
-        <router-link to="/">Go back</router-link>
-    </div>
-</template>

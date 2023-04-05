@@ -13,7 +13,7 @@ const routes = [
         name: 'CreateRoom',
         component: () => import('../views/CreateRoom.vue')
     }, {
-        path: '/join-room',
+        path: '/join-room/:roomCode?',
         name: 'JoinRoom',
         component: () => import('../views/JoinRoom.vue')
     }, {

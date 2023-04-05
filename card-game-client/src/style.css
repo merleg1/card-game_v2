@@ -1,9 +1,13 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100vh !important;
 }
 
 h1 {
@@ -11,13 +15,7 @@ h1 {
   line-height: 1.1;
 }
 
-.card {
-  padding: 8em;
-  margin: 1em;
-}
-
 #app {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;

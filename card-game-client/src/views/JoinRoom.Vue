@@ -1,37 +1,76 @@
+<template>
+    <div class="q-pa-md create-room-form">
+        <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
+            <div class="text-h4">Join a existing room</div>
+            <q-input filled v-model="roomCode" label="Your roomcode *" hint="Code to join a room" lazy-rules :rules="[
+                val => val && val.length == 8 || 'Please type roomcode with exactly 8 characters'           
+            ]" />
+            <q-input filled v-model="nickname" label="Your nickname *" hint="A descriptive name" lazy-rules :rules="[
+                val => val != '' || 'Please type your nickname',
+                val => val && val.length >= nicknameMinLength && val.length <= nicknameMaxLength || 'Your nickname must be between ' + nicknameMinLength + ' and ' + nicknameMaxLength + ' characters'
+            ]" />
+
+            <div>
+                <q-btn label="Submit" type="submit" color="primary" />
+                <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
+            </div>
+        </q-form>
+        <div class="go-back"><router-link to="/"><q-icon name="arrow_back" /> Go back</router-link></div>
+    </div>
+</template>
+
+<style>
+.create-room-form {
+    width: 600px;
+}
+
+.go-back {
+    margin-top: 2em;
+}
+</style>
+
 <script>
 import { socket } from "../socket";
+import { useQuasar } from 'quasar'
 
 export default {
     name: 'JoinRoom',
     data: function () {
         return {
+            roomCodeLength: 8,
+            roomCode: this.$route.params.roomCode.slice(0, this.roomCodeMaxLength),
+            nicknameMaxLength: 12,
+            nicknameMinLength: 4,
             nickname: '',
-            roomCode: ''
+            $q: useQuasar()
         };
     },
     methods: {
-        joinRoom: function () {
-            socket.emit("joinRoom", { roomCode : this.roomCode, nickname: this.nickname });
+        onSubmit() {
+            this.$q.notify({
+                color: 'green-4',
+                textColor: 'white',
+                icon: 'cloud_done',
+                message: 'Submitted'
+            })
+            socket.emit("joinRoom", { roomCode: this.roomCode, nickname: this.nickname });
+        },
+        onReset() {
+            this.nickname = '';
+            this.roomCode = '';
+        }
+    },
+    watch: {
+        "$route.params.roomCode": {
+            handler: function (value) {
+                this.roomCode = value.slice(0, this.roomCodeMaxLength);
+            },
+            deep: true,
+            immediate: true,
+        },
+        roomCode(val) {
+            this.$router.push({ name: 'JoinRoom', params: { roomCode: val } });
         }
     }
 }
 </script>
-
-<template>
-    <div>
-        <div>
-            <h2>Join a existing room</h2>
-            <div class="form-group">
-                <label for="roomcode">Room code</label>
-                <input type="text" class="form-control" id="roomcode" placeholder="Enter Room code" v-model="roomCode">
-            </div>
-            <div class="form-group">
-                <label for="nickname">Nickname</label>
-                <input type="text" class="form-control" id="nickname" placeholder="Enter nickname" v-model="nickname">
-            </div>
-            <button class="btn btn-primary" @click="joinRoom">Join room</button>
-            <br>
-            <router-link to="/">Join Room</router-link>
-        </div>
-    </div>
-</template>
