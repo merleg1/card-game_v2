@@ -17,7 +17,7 @@ const routes = [
         name: 'JoinRoom',
         component: () => import('../views/JoinRoom.vue')
     }, {
-        path: '/room',
+        path: '/room/:roomCode',
         name: 'Room',
         component: () => import('../views/Room.vue')
     },

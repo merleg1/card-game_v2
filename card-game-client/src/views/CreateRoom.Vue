@@ -43,13 +43,12 @@ export default {
     methods: {
         onSubmit() {
             this.$q.notify({
-                color: 'green-4',
+                color: 'green-5',
                 textColor: 'white',
                 icon: 'cloud_done',
-                message: 'Submitted'
+                message: 'Data submitted'
             })
             socket.emit("createRoom", { nickname: this.nickname });
-            console.log('onSubmit');
         },
         onReset() {
             this.nickname = '';
