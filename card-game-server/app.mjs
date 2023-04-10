@@ -1,6 +1,9 @@
 const port = process.env.PORT || 3000;
 
 import Room from './room.mjs';
+import MemorySessionStore from './sessionStore.mjs';
+const sessionStore = new MemorySessionStore();
+import clientSocketData from '../shared/clientSocketData.mjs';
 
 import express from 'express';
 const app = express();
@@ -14,28 +17,62 @@ const io = new Server(server, {
     }
 });
 import { nanoid } from 'nanoid';
-import PlayerClient from './playerClient.mjs';
 
 let rooms = [];
 
+io.use((socket, next) => {
+    const sessionID = socket.handshake.auth.sessionID;
+    if (sessionID) {
+        const session = sessionStore.findSession(sessionID);
+        if (session) {
+            socket.sessionID = sessionID;
+            socket.userID = session.userID;
+            socket.clientSocketData = session.clientSocketData;
+            if (socket.clientSocketData.roomJoined) {
+                socket.join(socket.clientSocketData.roomCode);
+            }
+            socket.socketIds = session.socketIds;
+            return next();
+        }
+    }
+
+    socket.sessionID = nanoid();
+    socket.userID = nanoid();
+    socket.socketIds = [];
+    socket.clientSocketData = new clientSocketData();
+    next();
+});
+
 io.on('connection', (socket) => {
     console.log('New connection from ' + socket.id);
+    socket.socketIds.push(socket.id);
+
+    sessionStore.saveSession(socket.sessionID, {
+        userID: socket.userID,
+        clientSocketData: socket.clientSocketData,
+        socketIds: socket.socketIds,
+        connected: true
+    });
+
+    socket.emit('session', { sessionID: socket.sessionID, userID: socket.userID, clientSocketData: socket.clientSocketData });
 
     socket.on('createRoom', (data) => {
 
-        if (data.nickname != null && data.nickname != "" && data.nickname != undefined) {
+        if (data.nickname != null && data.nickname != "" && data.nickname != undefined && !isInRoom(socket.userID)) {
             let roomId = nanoid(8);
             socket.join(roomId);
             let room = new Room(roomId);
             let nick = data.nickname.slice(0, 12);
-            room.addPlayer(socket.id, nick, true);
+            room.addPlayer(socket.userID, nick, true);
             rooms.push(room);
             console.log("Created room " + roomId + " for " + nick);
-            socket.emit('players', convertPlayersForClient(room.players));
-            socket.emit('roomJoined', { roomCode: roomId, isAdmin: true });
+            let players = convertPlayersForClient(room.players)
+            emitToSession(socket.socketIds, 'players', players);
+            emitToSession(socket.socketIds, 'roomJoined', { roomCode: roomId, isAdmin: true });
+
         }
         else {
-            socket.emit('error', { message: "Error creating room" });
+            emitToSession(socket.socketIds, 'error', { message: "Error creating room" });
         }
 
     });
@@ -43,23 +80,24 @@ io.on('connection', (socket) => {
     socket.on('joinRoom', (data) => {
         let nick = data.nickname.slice(0, 12);
         console.log("Joining room " + data.roomCode + " for " + nick);
-
-        if (data.nickname != null && data.nickname != "" && data.nickname != undefined) {
+        if (data.nickname != null && data.nickname != "" && data.nickname != undefined && !isInRoom(socket.userID)) {
             let room = getRoom(data.roomCode);
             if (room != null) {
                 console.log("Room found");
                 socket.join(room.id);
-                room.addPlayer(socket.id, nick);
-                io.to(room.id).emit('players', convertPlayersForClient(room.players));
-                socket.emit('roomJoined', { roomCode: data.roomCode, isAdmin: false });
+                room.addPlayer(socket.userID, nick);
+                let players = convertPlayersForClient(room.players);
+                io.to(room.id).emit('players', players);
+                emitToSession(socket.socketIds, 'roomJoined', { roomCode: data.roomCode, isAdmin: false });
+
             }
             else {
                 console.log("Room not found");
-                socket.emit('error', { message: "Room not found" })
+                emitToSession(socket.socketIds, 'error', { message: "Room not found" });
             }
         }
         else {
-            socket.emit('error', { message: "Error joining room" });
+            emitToSession(socket.socketIds, 'error', { message: "Error joining room" });
         }
 
 
@@ -68,16 +106,54 @@ io.on('connection', (socket) => {
     socket.on('startGame', (data) => {
         let room = getRoom(data.roomCode);
         if (room != null) {
-            if(isAdmin(socket.id, room)) {
+            if (isAdmin(socket.userID, room)) {
                 io.to(room.id).emit('gameStarted');
             }
             else {
-                socket.emit('error', {message: "Only admin can start game"});
+                emitToSession(socket.socketIds, 'error', { message: "Only admin can start game" });
             }
         }
     });
 
+    socket.on('leaveRoom', (data) => {
+        let room = getRoom(data.roomCode);
+        if (room != null) {
+            if (room.hasPlayer(socket.userID)) {
+                if (isAdmin(socket.userID, room)) {
+                    rooms.splice(rooms.indexOf(room), 1);
+                    io.to(room.id).emit('roomLeft');
+                }
+                else {
+                    room.removePlayer(socket.userID);
+                    let players = convertPlayersForClient(room.players);
+                    io.to(room.id).emit('players', players);
+                    socket.leave(room.id);
+                    emitToSession(socket.socketIds, 'roomLeft');
+                }
+            }
+        }
+    });
+
+    socket.on('updateClientSocketData', (data) => {
+        socket.clientSocketData = data;
+
+        sessionStore.saveSession(socket.sessionID, {
+            userID: socket.userID,
+            clientSocketData: socket.clientSocketData,
+            socketIds: socket.socketIds,
+            connected: true
+        });
+    });
+
     socket.on('disconnect', () => {
+        socket.socketIds = socket.socketIds.splice(socket.socketIds.indexOf(socket.id), 1);
+        sessionStore.saveSession(socket.sessionID, {
+            userID: socket.userID,
+            clientSocketData: socket.clientSocketData,
+            socketIds: socket.socketIds,
+            connected: false
+        });
+
         console.log(socket.id, "has disconnected");
     });
 
@@ -96,9 +172,9 @@ function getRoom(roomId) {
     return null;
 }
 
-function isAdmin(socketId, room) {
+function isAdmin(userID, room) {
     for (let p of room.players) {
-        if (p.socketId == socketId) {
+        if (p.id == userID) {
             return p.isAdmin;
         }
     }
@@ -108,7 +184,24 @@ function isAdmin(socketId, room) {
 function convertPlayersForClient(players) {
     let convertedPlayers = [];
     for (let p of players) {
-        convertedPlayers.push(new PlayerClient(p.name, p.isAdmin));
+        convertedPlayers.push({ name: p.name, isAdmin: p.isAdmin });
     }
     return convertedPlayers;
+}
+
+function isInRoom(userID) {
+    for (let r of rooms) {
+        for (let p of r.players) {
+            if (p.id == userID) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function emitToSession(socketIds, event, data) {
+    for (let id of socketIds) {
+        io.to(id).emit(event, data);
+    }
 }

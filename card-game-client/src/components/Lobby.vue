@@ -32,11 +32,16 @@
             </q-scroll-area>
         </q-list>
         <div class="start-game">
-            <q-btn v-if="sData.isAdmin" @click="startGame" class="start-game-button" label="Start game" color="primary" />
+            <div v-if="sData.isAdmin">
+                <q-btn @click="startGame" class="l-button" label="Start game" color="primary" />
+                <q-btn @click="leaveRoom" class="l-button" label="Close Room" color="red" />
+            </div>           
             <div v-else>
                 <q-spinner-hourglass color="purple" size="3em" />
                 Waiting for admin to start the game
                 <q-spinner-hourglass color="purple" size="3em" />
+                <br>
+                <q-btn @click="leaveRoom" class="l-button" label="Leave Room" color="red" />
             </div>
         </div>
     </div>
@@ -71,8 +76,9 @@
     margin-top: 1em;
 }
 
-.start-game-button {
+.l-button {
     padding: 0.5em 4em;
+    margin: 0.5em;
 }
 </style>
  
@@ -111,6 +117,9 @@ export default {
         },
         startGame() {
             socket.emit("startGame", { roomCode: this.sData.roomCode });
+        },
+        leaveRoom() {
+            socket.emit("leaveRoom", { roomCode: this.sData.roomCode });
         }
     }
 }

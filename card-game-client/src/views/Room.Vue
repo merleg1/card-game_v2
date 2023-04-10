@@ -17,7 +17,7 @@ export default {
         };
     },
     mounted() {
-        if (!socketData.roomJoined) {
+        if (!this.sData.roomJoined) {
             this.$router.push('/');
         }
     },

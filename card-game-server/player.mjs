@@ -1,6 +1,6 @@
 export default class Player {
-    constructor(socketId, name, isAdmin = false){
-        this.socketId= socketId;
+    constructor(id, name, isAdmin = false){
+        this.id = id;
         this.name = name;
         this.isAdmin = isAdmin;
     }

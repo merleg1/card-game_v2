@@ -7,7 +7,15 @@ export default class Room {
         this.id = id;
     }
 
-    addPlayer(socketId, name, isAdmin = false) {
-        this.players.push(new Player(socketId, name, isAdmin));
+    addPlayer(id, name, isAdmin = false) {
+        this.players.push(new Player(id, name, isAdmin));
+    }
+
+    removePlayer(id) {
+        this.players.splice(this.players.findIndex(p => p.id == id), 1);
+    }
+
+    hasPlayer(id) {
+        return this.players.findIndex(p => p.id == id) != -1;
     }
 }

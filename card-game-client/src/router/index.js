@@ -1,12 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
 import ErrorPage from '../views/ErrorPage.vue'
 
 const routes = [
     {
         path: '/',
         name: 'Home',
-        component: Home
+        component: () => import('../views/Home.vue')
     },
     {
         path: '/create-room',

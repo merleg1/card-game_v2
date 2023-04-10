@@ -30,13 +30,14 @@
 </style>
 
 <script>
-import { socket } from "../socket";
+import { socket, socketData } from "../socket";
 import { useQuasar } from 'quasar'
 
 export default {
     name: 'JoinRoom',
     data: function () {
         return {
+            sData: socketData,
             roomCodeLength: 8,
             roomCode: this.$route.params.roomCode.slice(0, this.roomCodeMaxLength),
             nicknameMaxLength: 12,
@@ -44,6 +45,11 @@ export default {
             nickname: '',
             $q: useQuasar()
         };
+    },
+    mounted() {
+        if (this.sData.roomJoined) {
+            this.$router.push({ name: 'Room', params: { roomCode: this.sData.roomCode } });
+        }
     },
     methods: {
         onSubmit() {

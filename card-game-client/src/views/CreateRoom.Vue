@@ -28,17 +28,23 @@
 </style>
 
 <script>
-import { socket } from "../socket";
+import { socket, socketData } from "../socket";
 import { useQuasar } from 'quasar'
 
 export default {
     data: function () {
         return {
+            sData: socketData,
             nicknameMaxLength: 12,
             nicknameMinLength: 4,
             nickname: '',
             $q: useQuasar()
         };
+    },
+    mounted() {
+        if (this.sData.roomJoined) {
+            this.$router.push({ name: 'Room', params: { roomCode: this.sData.roomCode } });
+        }
     },
     methods: {
         onSubmit() {
