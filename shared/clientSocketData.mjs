@@ -5,5 +5,8 @@ export default class SocketClientData {
         this.roomCode = roomCode;
         this.isAdmin = isAdmin;
         this.players = players;
+        this.currentQuestion = '';
+        this.currentQuestionPick = 0;
+        this.cardsInHand = [];
     }
 }

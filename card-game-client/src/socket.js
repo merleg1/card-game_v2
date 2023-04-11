@@ -53,7 +53,6 @@ socket.on('newRound', (data) => {
     socketData.currentQuestion = data.question;
     socketData.currentQuestionPick = data.pick;
     socketData.cardsInHand = data.cardsInHand;
-    console.log(socketData.cardsInHand);
     socket.emit('updateClientSocketData', socketData);
 });
 

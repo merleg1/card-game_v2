@@ -122,10 +122,10 @@ io.on('connection', (socket) => {
         if (room != null) {
             if (isAdmin(socket.userID, room)) {
                 room.startGame();
+                io.to(room.id).emit('gameStarted');
                 room.players.forEach(player => {
                     io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, cardsInHand: player.cardsInHand});
-                });
-                io.to(room.id).emit('gameStarted');
+                });          
             }
             else {
                 emitToSession(socket.socketIds, 'error', { message: "Only admin can start game" });
@@ -172,7 +172,7 @@ io.on('connection', (socket) => {
             socketIds: socket.socketIds,
             connected: false
         });
-
+        socket.leave(socket.userID);
         console.log(socket.id, "has disconnected");
     });
 
