@@ -13,7 +13,6 @@ socket.on("session", ({ sessionID, userID, clientSocketData }) => {
     localStorage.setItem("sessionID", sessionID);
     socket.userID = userID;
     socketData = reactive(clientSocketData);
-    console.log(socketData);
 });
 
 socket.on('error', (data) => {
@@ -47,6 +46,14 @@ socket.on('players', (data) => {
 
 socket.on('gameStarted', () => {
     socketData.gameStarted = true;
+    socket.emit('updateClientSocketData', socketData);
+});
+
+socket.on('newRound', (data) => {
+    socketData.currentQuestion = data.question;
+    socketData.currentQuestionPick = data.pick;
+    socketData.cardsInHand = data.cardsInHand;
+    console.log(socketData.cardsInHand);
     socket.emit('updateClientSocketData', socketData);
 });
 

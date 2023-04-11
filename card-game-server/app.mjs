@@ -4,6 +4,9 @@ import Room from './room.mjs';
 import MemorySessionStore from './sessionStore.mjs';
 const sessionStore = new MemorySessionStore();
 import clientSocketData from '../shared/clientSocketData.mjs';
+import sets from '../shared/sets.json' assert { type: 'json' };
+import QuestionCard from './questionCard.mjs';
+import Card from './card.mjs';
 
 import express from 'express';
 const app = express();
@@ -19,6 +22,16 @@ const io = new Server(server, {
 import { nanoid } from 'nanoid';
 
 let rooms = [];
+let allCards = { questionCards: [], answerCards: [] };
+for (let i = 0; i < sets.length; i++) {
+    for (let j = 0; j < sets[i].black.length; j++) {
+        allCards.questionCards.push(new QuestionCard(i, j, sets[i].black[j].text, sets[i].black[j].pick));
+    }
+    for (let j = 0; j < sets[i].white.length; j++) {
+        allCards.answerCards.push(new Card(i, j, sets[i].white[j].text));
+    }
+}
+console.log(allCards.questionCards.length + allCards.answerCards.length + " cards loaded");
 
 io.use((socket, next) => {
     const sessionID = socket.handshake.auth.sessionID;
@@ -46,6 +59,7 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     console.log('New connection from ' + socket.id);
     socket.socketIds.push(socket.id);
+    socket.join(socket.userID);
 
     sessionStore.saveSession(socket.sessionID, {
         userID: socket.userID,
@@ -61,7 +75,7 @@ io.on('connection', (socket) => {
         if (data.nickname != null && data.nickname != "" && data.nickname != undefined && !isInRoom(socket.userID)) {
             let roomId = nanoid(8);
             socket.join(roomId);
-            let room = new Room(roomId);
+            let room = new Room(roomId, allCards);
             let nick = data.nickname.slice(0, 12);
             room.addPlayer(socket.userID, nick, true);
             rooms.push(room);
@@ -107,6 +121,10 @@ io.on('connection', (socket) => {
         let room = getRoom(data.roomCode);
         if (room != null) {
             if (isAdmin(socket.userID, room)) {
+                room.startGame();
+                room.players.forEach(player => {
+                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, cardsInHand: player.cardsInHand});
+                });
                 io.to(room.id).emit('gameStarted');
             }
             else {
@@ -121,7 +139,8 @@ io.on('connection', (socket) => {
             if (room.hasPlayer(socket.userID)) {
                 if (isAdmin(socket.userID, room)) {
                     rooms.splice(rooms.indexOf(room), 1);
-                    io.to(room.id).emit('roomLeft');
+                    io.to(room.id).emit('roomLeft');   
+                    io.in(room.id).socketsLeave(room.id);      
                 }
                 else {
                     room.removePlayer(socket.userID);

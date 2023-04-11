@@ -20,7 +20,6 @@ export default {
   },
   created() {
     const sessionID = localStorage.getItem("sessionID");
-    console.log(sessionID);
     if (sessionID) {
       socket.auth = { sessionID };
       socket.connect();
