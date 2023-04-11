@@ -49,10 +49,16 @@ socket.on('gameStarted', () => {
     socket.emit('updateClientSocketData', socketData);
 });
 
-socket.on('newRound', (data) => {
+socket.on('newRound', async (data) => {
     socketData.currentQuestion = data.question;
     socketData.currentQuestionPick = data.pick;
-    socketData.cardsInHand = data.cardsInHand;
+    console.log(data.cardsInHand);
+    const timer = ms => new Promise(res => setTimeout(res, ms))
+    for(let c of data.cardsInHand) {
+        console.log(c);
+        socketData.cardsInHand.push(c);
+        await timer(500);
+    }
     socket.emit('updateClientSocketData', socketData);
 });
 
