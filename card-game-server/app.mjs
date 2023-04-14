@@ -124,8 +124,9 @@ io.on('connection', (socket) => {
             if (isAdmin(socket.userID, room)) {
                 room.startGame();
                 io.to(room.id).emit('gameStarted');
+                room.round++;
                 room.players.forEach(player => {
-                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, cardsInHand: player.cardsInHand });
+                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: player.cardsInHand });
                 });
             }
             else {
@@ -138,19 +139,60 @@ io.on('connection', (socket) => {
         let room = getRoom(socket.clientSocketData.roomCode);
         if (room != null) {
             let player = room.getPlayer(socket.userID);
-            if (player != null) {
+            if (player != null && !player.hasPlayed) {
+                let i = 0;
                 data.forEach(card => {
-                    if(player.hasCardInHand(card)){
-                        player.removeCardFromHand(card);
-                        room.cardsToJudge.set(player.id, card);
+                    if (player.playCard(card) && i < room.currentQuestionCard.pick) {
+                        i++;
                     }
                 });
+                io.to(player.id).emit('cardsPlayed');
+                player.hasPlayed = true;
                 console.log(player.cardsInHand.length);
             }
-            console.log(room.cardsToJudge);
+            if (room.players.every(player => player.hasPlayed)) {
+                room.setCardsToJudge();
+                io.to(room.id).emit('judge', room.getCardsToJudgeForClient());
+            }
         }
-       
+    });
 
+    socket.on('voteForCard', (data) => {
+
+        let room = getRoom(socket.clientSocketData.roomCode);
+        if (room != null) {
+            let player = room.getPlayer(socket.userID);
+            if (player != null && !player.hasVoted) {
+                player.hasVoted = true;
+                room.cardsToJudge.getJudgeCardById(data.cardId).votes++;
+            }
+            if (room.players.every(player => player.hasVoted)) {
+                let winningCard = room.getWinningCard();
+                let winningPlayer = room.getPlayerById(winningCard.playerId);
+                if(winningPlayer != null){
+                    winningPlayer.score++;
+                }
+                io.to(room.id).emit('roundEnded', { winningCard: winningCard });
+                room.players.forEach(player => {
+                    player.hasPlayed = false;
+                    player.hasVoted = false;
+                    player.playedCards = [];
+                    player.votes = 0;              
+                });
+                let cardsToDraw = room.currentQuestionCard.pick;
+                room.cardsToJudge.clear();
+                room.drawQuestionCard();
+                room.round++;
+                room.players.forEach(player => {
+                    let oldCards = player.cardsInHand;
+                    room.drawAnswerCards(player.id, cardsToDraw);
+                    let allCards = player.cardsInHand;
+                    let newCards = allCards.filter(card => !oldCards.includes(card));
+                    room.drawAnswerCards(player.id, cardsToDraw);
+                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: newCards });
+                });
+            }
+        }
     });
 
 

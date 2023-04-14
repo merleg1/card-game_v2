@@ -8,5 +8,8 @@ export default class SocketClientData {
         this.currentQuestion = '';
         this.currentQuestionPick = 0;
         this.cardsInHand = [];
+        this.hasPlayed = false;
+        this.isJudging = false;
+        this.cardsToJudge = [];
     }
 }

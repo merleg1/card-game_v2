@@ -11,7 +11,8 @@ export default class Room {
         this.questionCards = allCards.questionCards.filter(c => this.selectedSets.includes(c.setId));
         this.answerCards = allCards.answerCards.filter(c => this.selectedSets.includes(c.setId));
         this.currentQuestionCard = null;
-        this.cardsToJudge = new Map();
+        this.round = 0;
+        this.cardsToJudge = [];
     }
 
     addPlayer(id, name, isAdmin = false) {
@@ -33,9 +34,7 @@ export default class Room {
     startGame() {
         this.drawQuestionCard();
         this.players.forEach(p => {
-            for (let i = 0; i < 8; i++) {
-                this.drawAnswerCard(p.id);
-            }
+            this.drawAnswerCards(p.id, 8);
         });
     }
 
@@ -51,5 +50,44 @@ export default class Room {
         let card = this.answerCards[index];
         this.answerCards.splice(index, 1);
         this.players.find(p => p.id == playerId).addCardToHand(card); 
+    }
+
+    drawAnswerCards(playerId, amount) {
+        for (let i = 0; i < amount; i++) {
+            this.drawAnswerCard(playerId);
+        }
+    }
+
+    setCardsToJudge() {
+        this.cardsToJudge = [];
+        let i = 1;
+        this.players.forEach(p => {
+            this.cardsToJudge.push({id: i, playerId: p.id, cards: p.playedCards, votes: p.votes});
+            i++;
+        });
+    }
+
+    getCardsToJudgeForClient() {
+        let cards = [];
+        this.cardsToJudge.forEach(c => {
+            cards.push({id: c.id, cards: c.cards});
+        });
+        return cards;
+    }
+
+    getJudgeCardById(id) {
+        return this.cardsToJudge.find(c => c.id == id);
+    }
+
+    getWinningCard() {
+        let winningCard = null;
+        let winningVotes = 0;
+        this.cardsToJudge.forEach(c => {
+            if (c.votes > winningVotes) {
+                winningVotes = c.votes;
+                winningCard = c;
+            }
+        });
+        return winningCard;
     }
 }

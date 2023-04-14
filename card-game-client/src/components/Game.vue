@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!sData.isJudging">
     <Transition name="question">
       <div :key="sData.currentQuestion" class="text-h4 question" id="question">
         {{ sData.currentQuestion }}
@@ -15,6 +15,9 @@
         </div>
       </div>
     </TransitionGroup>
+  </div>
+  <div v-else>
+    Judge
   </div>
 </template>
 
@@ -232,9 +235,9 @@ export default {
       let rect2 = el2.getBoundingClientRect();
       if (rect1 != null && rect2 != null) {
         return !(rect1.right < rect2.left ||
-        rect1.left > rect2.right ||
-        rect1.bottom < rect2.top ||
-        rect1.top > rect2.bottom);
+          rect1.left > rect2.right ||
+          rect1.bottom < rect2.top ||
+          rect1.top > rect2.bottom);
       }
       return false;
     },
@@ -249,8 +252,15 @@ export default {
       this.dragData.cardy = this.dragData.wh - event.target.offsetTop - this.dragData.cardh;
       this.dragData.startcardx = this.dragData.cardx;
       this.dragData.startcardy = this.dragData.cardy;
-      this.dragData.mx = event.pageX;
-      this.dragData.my = event.pageY;
+      if (event instanceof MouseEvent) {
+        this.dragData.mx = event.pageX;
+        this.dragData.my = event.pageY;
+      }
+      if (event instanceof TouchEvent) {
+        this.dragData.mx = event.touches[0].pageX;
+        this.dragData.my = event.touches[0].pageY;
+      }
+
       this.dragData.pinx = this.dragData.cardw / 2;
       this.dragData.piny = this.dragData.cardh / 2;
       this.dragData.pinxperc = 100 - (this.dragData.pinx / this.dragData.cardw) * 100;
@@ -262,16 +272,21 @@ export default {
 
     },
     drag: function (event) {
-      // console.log("drag", event.pageX + ", " + event.pageY);
       if (this.dragData.move) {
-        this.dragData.mx = event.pageX;
-        this.dragData.my = event.pageY;
+        if (event instanceof MouseEvent) {
+          this.dragData.mx = event.pageX;
+          this.dragData.my = event.pageY;
+        }
+        if (event instanceof TouchEvent) {
+          this.dragData.mx = event.touches[0].pageX;
+          this.dragData.my = event.touches[0].pageY;
+        }
       }
     },
     endDrag: function () {
       if (this.dragData.move) {
         this.dragData.questionDiv = document.getElementById("question");
-        if (this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.cardsPicked.length < this.sData.currentQuestionPick) {
+        if (this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.cardsPicked.length < this.sData.currentQuestionPick && !this.sData.hasPlayed) {
           console.log("colliding");
           this.cardsPicked.push(this.dragData.card);
           this.sData.cardsInHand.splice(this.sData.cardsInHand.indexOf(this.dragData.card), 1);
@@ -366,6 +381,7 @@ export default {
 
   },
   created() {
+
     window.addEventListener('mousemove', this.drag);
     window.addEventListener('touchmove', this.drag);
     window.addEventListener('mouseup', this.endDrag);
@@ -373,7 +389,11 @@ export default {
     window.addEventListener('resize', this.onResize);
 
     requestAnimationFrame(this.moveCard);
-  }
+  },
+  mounted() {
+    this.onResize();
+  },
+
 }
 
 </script>
