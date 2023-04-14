@@ -62,7 +62,7 @@ export default class Room {
         this.cardsToJudge = [];
         let i = 1;
         this.players.forEach(p => {
-            this.cardsToJudge.push({id: i, playerId: p.id, cards: p.playedCards, votes: p.votes});
+            this.cardsToJudge.push({id: i, playerId: p.id, cards: p.playedCards, votes: 0});
             i++;
         });
     }

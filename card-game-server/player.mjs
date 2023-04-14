@@ -5,7 +5,6 @@ export default class Player {
         this.isAdmin = isAdmin;
         this.cardsInHand = [];
         this.playedCards = [];
-        this.votes = 0;
         this.hasPlayed = false;
         this.hasVoted = false;
         this.score = 0;

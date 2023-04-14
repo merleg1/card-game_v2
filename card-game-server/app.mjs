@@ -176,8 +176,7 @@ io.on('connection', (socket) => {
                 room.players.forEach(player => {
                     player.hasPlayed = false;
                     player.hasVoted = false;
-                    player.playedCards = [];
-                    player.votes = 0;              
+                    player.playedCards = [];              
                 });
                 let cardsToDraw = room.currentQuestionCard.pick;
                 room.cardsToJudge.clear();
