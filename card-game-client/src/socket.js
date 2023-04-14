@@ -52,10 +52,8 @@ socket.on('gameStarted', () => {
 socket.on('newRound', async (data) => {
     socketData.currentQuestion = data.question;
     socketData.currentQuestionPick = data.pick;
-    console.log(data.cardsInHand);
     const timer = ms => new Promise(res => setTimeout(res, ms))
     for(let c of data.cardsInHand) {
-        console.log(c);
         socketData.cardsInHand.push(c);
         await timer(500);
     }

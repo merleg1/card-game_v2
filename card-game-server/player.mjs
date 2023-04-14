@@ -1,5 +1,5 @@
 export default class Player {
-    constructor(id, name, isAdmin = false){
+    constructor(id, name, isAdmin = false) {
         this.id = id;
         this.name = name;
         this.isAdmin = isAdmin;
@@ -11,6 +11,11 @@ export default class Player {
     }
 
     removeCardFromHand(card) {
-        this.cardsInHand.splice(this.cardsInHand.findIndex(c => c.id == card.id), 1);
+        this.cardsInHand.splice(this.cardsInHand.findIndex(c => c.setId == card.setId && c.id == card.id), 1);
     }
+
+    hasCardInHand(card) {
+        return this.cardsInHand.findIndex(c => c.setId == card.setId && c.id == card.id) != -1;
+    }
+
 }

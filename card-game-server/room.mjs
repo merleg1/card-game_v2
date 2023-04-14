@@ -11,6 +11,7 @@ export default class Room {
         this.questionCards = allCards.questionCards.filter(c => this.selectedSets.includes(c.setId));
         this.answerCards = allCards.answerCards.filter(c => this.selectedSets.includes(c.setId));
         this.currentQuestionCard = null;
+        this.cardsToJudge = new Map();
     }
 
     addPlayer(id, name, isAdmin = false) {
@@ -23,6 +24,10 @@ export default class Room {
 
     hasPlayer(id) {
         return this.players.findIndex(p => p.id == id) != -1;
+    }
+
+    getPlayer(id) {
+        return this.players.find(p => p.id == id);
     }
 
     startGame() {

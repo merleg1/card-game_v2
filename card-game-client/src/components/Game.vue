@@ -1,329 +1,183 @@
 <template>
-    <div>
-        GAME
-        <TransitionGroup name="hand" class="hand" tag="div">
-            <div class="playing-card" v-for="card in sData.cardsInHand" :key="card.setId + ' ' + card.id">
-                <div class="playing-card-face">
-                    <div class="playing-card-label">
-                        {{ card.text }}
-                    </div>
-                </div>
-            </div>
-        </TransitionGroup>
-    </div>
+  <div>
+    <Transition name="question">
+      <div :key="sData.currentQuestion" class="text-h4 question" id="question">
+        {{ sData.currentQuestion }}
+      </div>
+    </Transition>
+    <TransitionGroup name="hand" class="hand" tag="div">
+      <div class="playing-card" v-for="card in sData.cardsInHand" :key="card.setId + '.' + card.id"
+        :id="card.setId + '.' + card.id" @mousedown="startDrag($event, card)" @touchstart="startDrag($event, card)">
+        <div class="playing-card-face">
+          <div class="playing-card-label">
+            {{ card.text }}
+          </div>
+        </div>
+      </div>
+    </TransitionGroup>
+  </div>
 </template>
 
-<style>
+<style lang="scss">
+.question {
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  font-family: Georgia, serif;
+  margin-bottom: 2em;
+  width: 50vw;
+}
+
+.question-enter-active,
+.question-leave-active {
+  transition: all 0.3s ease;
+}
+
+.question-enter-from,
+.question-leave-to
+
+/* .slide-fade-leave-active for <2.1.8 */
+  {
+  transform: translate(50vw, -20vh) rotate(30deg) scale(0.7) skew(-30deg);
+  opacity: 0;
+}
+
 .hand {
-    --number-of-cards: v-bind(sData.cardsInHand.length);
-    bottom: calc(var(--number-of-cards) * 46.6666666667px);
-    display: flex;
-    height: 150px;
-    padding: 0 50px;
-    justify-content: center;
-    position: fixed;
-    left: 0;
-    right: 0;
+  bottom: 0;
+  display: flex;
+  height: 150px;
+  padding: 0 50px;
+  justify-content: center;
+  position: fixed;
+  left: 0;
+  right: 0;
 }
 
 .hand-enter-active,
 .hand-leave-active {
-    transition: 0.5s left ease, 0.5s bottom ease;
-    left: 0;
-    bottom: 0;
+  transition: 0.5s left ease, 0.5s bottom ease;
+  left: 0;
+  bottom: 0;
 }
 
 .hand-enter-from,
 .hand-leave-to {
-    bottom: -30px;
-    left: 300px;
+  bottom: -30px;
+  left: 300px;
 }
 
 .playing-card {
-    height: 150px;
-    margin: 0 -25px;
-    position: relative;
-    width: 100px;
+  perspective: 300px;
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  height: 150px;
+  margin: 0 -25px;
+  position: relative;
+  width: 100px;
 }
 
 .playing-card:after {
-    bottom: 0;
-    content: "";
-    left: -60px;
-    position: absolute;
-    right: -60px;
-    top: 0px;
-    z-index: 10;
+  bottom: 0;
+  content: "";
+  left: -60px;
+  position: absolute;
+  right: -60px;
+  top: 0px;
+  z-index: 10;
 }
 
 .playing-card-face {
-    bottom: 0;
-    content: "";
-    left: 0;
-    pointer-events: none;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: 800ms cubic-bezier(0.19, 1, 0.22, 1) transform;
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: 800ms cubic-bezier(0.19, 1, 0.22, 1) transform;
 }
 
 .playing-card-face:after {
-    -webkit-animation: none;
-    animation: none;
-    background: #fff;
-    bottom: 0;
-    content: "";
-    left: 0;
-    opacity: 0;
-    position: absolute;
-    right: 0;
-    top: 0;
+  -webkit-animation: none;
+  animation: none;
+  background: #fff;
+  bottom: 0;
+  content: "";
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .playing-card-label {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 14px 14px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 14px 14px;
 }
 
-.playing-card:nth-child(1) .playing-card-face {
-    background: linear-gradient(-135deg, #ff9999, #da0b0b);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(255, 153, 153, 0.75);
-    transform: translateY(46.6666666667px) rotate(-29.1666666667deg);
-}
+$total: 8;
 
-.playing-card:nth-child(1) .playing-card-face .playing-card-label {
-    color: #db0000;
-    text-shadow: -0.025em 0.025em 0 #ff8080;
-}
+@for $i from 0 through ($total - 1) {
+  $hue: ($i / $total) * -360;
+  $rotationRange: 50;
+  $rotation: ($i - ($total - 1) / 2) / ($total - 2) * $rotationRange;
+  $offsetRange: 80;
+  $offset: abs(($i - ($total - 1) / 2) / ($total - 2) * $offsetRange);
 
-.playing-card:nth-child(1):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 153, 153, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
+  .playing-card:nth-child(#{$i + 1}) {
+    .playing-card-face {
+      background: linear-gradient(-135deg, hsla($hue, 100%, 80%, 1),
+          hsla($hue, 90%, 45%, 1));
+      box-shadow:
+        -5px 5px 5px hsla(0, 0%, 0%, 0.15),
+        inset 0 0 0 2px hsla($hue, 100%, 80%, 0.75);
+      transform: translateY($offset * 1px) rotate($rotation * 1deg);
 
-.playing-card:nth-child(1):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(1):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(2) .playing-card-face {
-    background: linear-gradient(-135deg, #ff99e6, #da0ba6);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(255, 153, 230, 0.75);
-    transform: translateY(33.3333333333px) rotate(-20.8333333333deg);
-}
-
-.playing-card:nth-child(2) .playing-card-face .playing-card-label {
-    color: #db00a4;
-    text-shadow: -0.025em 0.025em 0 #ff80df;
-}
-
-.playing-card:nth-child(2):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 153, 230, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(2):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(2):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(3) .playing-card-face {
-    background: linear-gradient(-135deg, #cc99ff, #730bda);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(204, 153, 255, 0.75);
-    transform: translateY(20px) rotate(-12.5deg);
-}
-
-.playing-card:nth-child(3) .playing-card-face .playing-card-label {
-    color: #6e00db;
-    text-shadow: -0.025em 0.025em 0 #bf80ff;
-}
-
-.playing-card:nth-child(3):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(204, 153, 255, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(3):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(3):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(4) .playing-card-face {
-    background: linear-gradient(-135deg, #99b3ff, #0b3fda);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(153, 179, 255, 0.75);
-    transform: translateY(6.6666666667px) rotate(-4.1666666667deg);
-}
-
-.playing-card:nth-child(4) .playing-card-face .playing-card-label {
-    color: #0037db;
-    text-shadow: -0.025em 0.025em 0 #809fff;
-}
-
-.playing-card:nth-child(4):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(153, 179, 255, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(4):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(4):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(5) .playing-card-face {
-    background: linear-gradient(-135deg, #99ffff, #0bdada);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(153, 255, 255, 0.75);
-    transform: translateY(6.6666666667px) rotate(4.1666666667deg);
-}
-
-.playing-card:nth-child(5) .playing-card-face .playing-card-label {
-    color: #00dbdb;
-    text-shadow: -0.025em 0.025em 0 #80ffff;
-}
-
-.playing-card:nth-child(5):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(153, 255, 255, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(5):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(5):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(6) .playing-card-face {
-    background: linear-gradient(-135deg, #99ffb3, #0bda3f);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(153, 255, 179, 0.75);
-    transform: translateY(20px) rotate(12.5deg);
-}
-
-.playing-card:nth-child(6) .playing-card-face .playing-card-label {
-    color: #00db37;
-    text-shadow: -0.025em 0.025em 0 #80ff9f;
-}
-
-.playing-card:nth-child(6):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(153, 255, 179, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(6):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(6):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(7) .playing-card-face {
-    background: linear-gradient(-135deg, #ccff99, #73da0b);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(204, 255, 153, 0.75);
-    transform: translateY(33.3333333333px) rotate(20.8333333333deg);
-}
-
-.playing-card:nth-child(7) .playing-card-face .playing-card-label {
-    color: #6edb00;
-    text-shadow: -0.025em 0.025em 0 #bfff80;
-}
-
-.playing-card:nth-child(7):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(204, 255, 153, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(7):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(7):hover:after {
-    top: -175px;
-}
-
-.playing-card:nth-child(8) .playing-card-face {
-    background: linear-gradient(-135deg, #ffe699, #daa60b);
-    box-shadow: -5px 5px 5px rgba(0, 0, 0, 0.15), inset 0 0 0 2px rgba(255, 230, 153, 0.75);
-    transform: translateY(46.6666666667px) rotate(29.1666666667deg);
-}
-
-.playing-card:nth-child(8) .playing-card-face .playing-card-label {
-    color: #dba400;
-    text-shadow: -0.025em 0.025em 0 #ffdf80;
-}
-
-.playing-card:nth-child(8):hover .playing-card-face {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 2px rgba(255, 230, 153, 0.75);
-    transform: translateY(-100px) rotate(0deg) scale(2);
-    transition-duration: 0ms;
-    z-index: 5;
-}
-
-.playing-card:nth-child(8):hover .playing-card-face:after {
-    -webkit-animation: fade 250ms ease-out forwards;
-    animation: fade 250ms ease-out forwards;
-}
-
-.playing-card:nth-child(8):hover:after {
-    top: -175px;
-}
-
-@-webkit-keyframes fade {
-    0% {
-        opacity: 0.9;
-        transform: scale(1);
+      .playing-card-label {
+        color: hsla($hue, 100%, 43%, 1);
+        text-shadow: -0.025em 0.025em 0 hsla($hue, 100%, 75%, 1);
+      }
     }
 
-    100% {
-        opacity: 0;
-        transform: scale(1.15);
+    &:hover {
+      .playing-card-face {
+        box-shadow:
+          0 10px 20px hsla(0, 0%, 0%, 0.4),
+          inset 0 0 0 2px hsla($hue, 100%, 80%, 0.75);
+        transform: translateY(-100px) rotate(0deg) scale(2);
+        transition-duration: 0ms;
+        z-index: 5;
+
+        &:after {
+          animation: fade 250ms ease-out forwards;
+        }
+      }
+
+      &:after {
+        top: -175px;
+      }
     }
+  }
 }
 
 @keyframes fade {
-    0% {
-        opacity: 0.9;
-        transform: scale(1);
-    }
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
 
-    100% {
-        opacity: 0;
-        transform: scale(1.15);
-    }
+  100% {
+    opacity: 0;
+    transform: scale(1.15);
+  }
 }
 </style>
 
@@ -332,15 +186,194 @@ import { socketData, socket } from "../socket";
 import { useQuasar } from 'quasar'
 
 export default {
-    name: 'Game',
-    data: function () {
-        return {
-            sData: socketData,
-            shareUrl: window.location.origin + "/join-room/" + this.$route.params.roomCode,
-            $q: useQuasar()
-        };
+  name: 'Game',
+  data: function () {
+    return {
+      sData: socketData,
+      shareUrl: window.location.origin + "/join-room/" + this.$route.params.roomCode,
+      cardsPicked: [],
+      $q: useQuasar(),
+      dragData: {
+        move: false,
+        ww: window.innerWidth,
+        wh: window.innerHeight,
+        cardw: 0,
+        cardh: 0,
+        cardx: 0,
+        cardy: 0,
+        startcardx: 0,
+        startcardy: 0,
+        pinx: 0,
+        piny: 0,
+        pinxperc: 0,
+        pinyperc: 0,
+        mx: 0,
+        my: 0,
+        targetx: 0,
+        targety: 0,
+        ocardx: 0,
+        ocardy: 0,
+        rx: 0,
+        ry: 0,
+        targetrx: 0,
+        targetry: 0,
+        targetscale: 1,
+        scale: 1,
+        cardDiv: null,
+        card: null,
+        questionDiv: null,
+        transformbefore: "",
+      }
+    };
+  },
+  methods: {
+    doElsCollide: function (el1, el2) {
+      let rect1 = el1.getBoundingClientRect();
+      let rect2 = el2.getBoundingClientRect();
+      if (rect1 != null && rect2 != null) {
+        return !(rect1.right < rect2.left ||
+        rect1.left > rect2.right ||
+        rect1.bottom < rect2.top ||
+        rect1.top > rect2.bottom);
+      }
+      return false;
     },
-    methods: {
+    startDrag: function (event, card) {
+      this.dragData.cardDiv = event.target;
+      this.dragData.card = card;
+
+      this.dragData.move = true;
+      this.dragData.cardw = event.target.offsetWidth;
+      this.dragData.cardh = event.target.offsetHeight;
+      this.dragData.cardx = event.target.offsetLeft;
+      this.dragData.cardy = this.dragData.wh - event.target.offsetTop - this.dragData.cardh;
+      this.dragData.startcardx = this.dragData.cardx;
+      this.dragData.startcardy = this.dragData.cardy;
+      this.dragData.mx = event.pageX;
+      this.dragData.my = event.pageY;
+      this.dragData.pinx = this.dragData.cardw / 2;
+      this.dragData.piny = this.dragData.cardh / 2;
+      this.dragData.pinxperc = 100 - (this.dragData.pinx / this.dragData.cardw) * 100;
+      this.dragData.pinyperc = 100 - (this.dragData.piny / this.dragData.cardh) * 100;
+
+      let cface = event.target.querySelector(".playing-card-face");
+      this.dragData.transformbefore = cface.style.transform;
+      cface.style.transform = "";
+
+    },
+    drag: function (event) {
+      // console.log("drag", event.pageX + ", " + event.pageY);
+      if (this.dragData.move) {
+        this.dragData.mx = event.pageX;
+        this.dragData.my = event.pageY;
+      }
+    },
+    endDrag: function () {
+      if (this.dragData.move) {
+        this.dragData.questionDiv = document.getElementById("question");
+        if (this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.cardsPicked.length < this.sData.currentQuestionPick) {
+          console.log("colliding");
+          this.cardsPicked.push(this.dragData.card);
+          this.sData.cardsInHand.splice(this.sData.cardsInHand.indexOf(this.dragData.card), 1);
+          if (this.sData.currentQuestion.includes("_")) {
+            this.sData.currentQuestion = this.sData.currentQuestion.replace("_", this.dragData.card.text);
+          }
+          else {
+            this.sData.currentQuestion += " " + this.dragData.card.text;
+          }
+
+          if (this.cardsPicked.length >= this.sData.currentQuestionPick) {
+            console.log("play cards");
+            socket.emit("playCards", this.cardsPicked);
+            socket.emit('updateClientSocketData', socketData);
+          }
+        }
+        else {
+          this.dragData.cardDiv.style.transform = "";
+          this.dragData.cardDiv.querySelector('.playing-card-face').transformOrigin = "";
+          this.dragData.cardDiv.querySelector('.playing-card-face').style.transform = this.dragData.transformbefore;
+        }
+        this.dragData.move = false;
+        this.dragData.cardDiv = null;
+        this.dragData.card = null;
+      }
+    },
+    onResize: function () {
+      this.dragData.ww = window.innerWidth;
+      this.dragData.wh = window.innerHeight;
+    },
+    moveCard: function () {
+
+      // set new target position
+      this.dragData.targetx = this.dragData.mx - this.dragData.cardx - this.dragData.pinx;
+      this.dragData.targety = this.dragData.my - this.dragData.cardy - this.dragData.piny;
+      // console.log("moveCard", this.dragData.targetx, this.dragData.targety);
+
+      // lerp to new position
+      this.dragData.cardx += this.dragData.targetx * 0.25;
+      this.dragData.cardy += this.dragData.targety * 0.25;
+      // console.log("lerped", this.dragData.pinx, this.dragData.piny)
+
+      // contain card to window bounds
+      if (this.dragData.cardx < -this.dragData.cardw / 2) {
+        this.dragData.cardx = -this.dragData.cardw / 2;
+      }
+      if (this.dragData.cardx > this.dragData.ww - this.dragData.cardw / 2) {
+        this.dragData.cardx = this.dragData.ww - this.dragData.cardw / 2;
+      }
+      if (this.dragData.cardy < -this.dragData.cardh / 2) {
+        this.dragData.cardy = -this.dragData.cardh / 2;
+      }
+      if (this.dragData.cardy > this.dragData.wh - this.dragData.cardh / 2) {
+        this.dragData.cardy = this.dragData.wh - this.dragData.cardh / 2;
+      }
+      // console.log("bounds", this.dragData.cardx, this.dragData.cardy)
+
+
+      // get rotation based on how much card moved
+      this.dragData.targetrx = (this.dragData.ocardy - this.dragData.cardy - this.dragData.rx) * 3;
+      this.dragData.targetry = (this.dragData.cardx - this.dragData.ocardx - this.dragData.ry) * 3;
+
+      // lock rotation so things don't get too crazy
+      this.dragData.targetrx = Math.min(this.dragData.targetrx, 90);
+      this.dragData.targetrx = Math.max(this.dragData.targetrx, -90);
+      this.dragData.targetry = Math.min(this.dragData.targetry, 90);
+      this.dragData.targetry = Math.max(this.dragData.targetry, -90);
+
+      // lerp to new rotation
+      this.dragData.rx += this.dragData.targetrx * 0.1;
+      this.dragData.ry += this.dragData.targetry * 0.1;
+
+      // scale up when the mouse is pressed
+      this.dragData.targetscale = this.dragData.move ? 2 - this.dragData.scale : 1 - this.dragData.scale;
+      this.dragData.scale += this.dragData.targetscale * 0.2;
+
+      // apply the transform
+      let cardxrel = this.dragData.cardx - this.dragData.startcardx;
+      let cardyrel = this.dragData.cardy - this.dragData.startcardy;
+      if (this.dragData.cardDiv != null) {
+        this.dragData.cardDiv.style['transform'] = 'translate3d(' + cardxrel + 'px, ' + cardyrel + 'px, 0)' + ' scale(' + this.dragData.scale + ')';
+        this.dragData.cardDiv.querySelector('.playing-card-face').style['transform-origin'] = this.dragData.pinxperc + '% ' + this.dragData.pinyperc + '%';
+        this.dragData.cardDiv.querySelector('.playing-card-face').style['transform'] = 'rotateY(' + this.dragData.ry + 'deg) rotateX(' + this.dragData.rx + 'deg)';
+      }
+
+      // store the old card position
+      this.dragData.ocardx = this.dragData.cardx;
+      this.dragData.ocardy = this.dragData.cardy;
+
+      requestAnimationFrame(this.moveCard);
     }
+
+  },
+  created() {
+    window.addEventListener('mousemove', this.drag);
+    window.addEventListener('touchmove', this.drag);
+    window.addEventListener('mouseup', this.endDrag);
+    window.addEventListener('touchend', this.endDrag);
+    window.addEventListener('resize', this.onResize);
+
+    requestAnimationFrame(this.moveCard);
+  }
 }
+
 </script>

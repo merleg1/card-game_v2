@@ -25,8 +25,8 @@
                     <q-item-section>
                         {{ player.name }}
                     </q-item-section>
-                    <q-item-section v-if="player.isAdmin" side>
-                        <q-icon name="star" color="yellow" size="2em" />
+                    <q-item-section  style="width: 4em;" side>
+                        <q-icon v-if="player.isAdmin" name="star" color="yellow" size="2em" />
                     </q-item-section>
                 </q-item>
             </q-scroll-area>

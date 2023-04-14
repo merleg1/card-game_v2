@@ -1,6 +1,7 @@
 const port = process.env.PORT || 3000;
 
 import Room from './room.mjs';
+import Player from './player.mjs';
 import MemorySessionStore from './sessionStore.mjs';
 const sessionStore = new MemorySessionStore();
 import clientSocketData from '../shared/clientSocketData.mjs';
@@ -124,8 +125,8 @@ io.on('connection', (socket) => {
                 room.startGame();
                 io.to(room.id).emit('gameStarted');
                 room.players.forEach(player => {
-                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, cardsInHand: player.cardsInHand});
-                });          
+                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, cardsInHand: player.cardsInHand });
+                });
             }
             else {
                 emitToSession(socket.socketIds, 'error', { message: "Only admin can start game" });
@@ -133,14 +134,34 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('playCards', (data) => {
+        let room = getRoom(socket.clientSocketData.roomCode);
+        if (room != null) {
+            let player = room.getPlayer(socket.userID);
+            if (player != null) {
+                data.forEach(card => {
+                    if(player.hasCardInHand(card)){
+                        player.removeCardFromHand(card);
+                        room.cardsToJudge.set(player.id, card);
+                    }
+                });
+                console.log(player.cardsInHand.length);
+            }
+            console.log(room.cardsToJudge);
+        }
+       
+
+    });
+
+
     socket.on('leaveRoom', (data) => {
         let room = getRoom(data.roomCode);
         if (room != null) {
             if (room.hasPlayer(socket.userID)) {
                 if (isAdmin(socket.userID, room)) {
                     rooms.splice(rooms.indexOf(room), 1);
-                    io.to(room.id).emit('roomLeft');   
-                    io.in(room.id).socketsLeave(room.id);      
+                    io.to(room.id).emit('roomLeft');
+                    io.in(room.id).socketsLeave(room.id);
                 }
                 else {
                     room.removePlayer(socket.userID);
