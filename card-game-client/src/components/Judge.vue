@@ -1,44 +1,37 @@
 <template>
-    <card-swipe :ratio="0.65" class="judge">
-      <card-swipe-item class="playing-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
-        :id="card.setId + '.' + card.id">
+    <!-- <card-swipe :ratio="0.65" class="judge">
+      <card-swipe-item class="playing-card" v-for="card in sData.cardsToJudge" :key="card.id"
+        :id="card.id">
         <div class="playing-card-face">
           <div class="playing-card-label">
             {{ card.text }}
           </div>
         </div>
       </card-swipe-item>
+    </card-swipe> -->
+    <card-swipe :ratio="1">
+      <card-swipe-item>
+        <div
+          class="color-card"
+          style="background-image: linear-gradient(to right, #fe686c 0%, #fe3c71 100%)"
+        >1</div>
+      </card-swipe-item>
+      <card-swipe-item>
+        <div
+          class="color-card"
+          style="background-image: linear-gradient(to right, #ffaa00 0%, #ff8800 100%);"
+        >2</div>
+      </card-swipe-item>
+      <card-swipe-item>
+        <div
+          class="color-card"
+          style="background-image: linear-gradient(to right, #add0f8 0%, #5ca2f8 100%);"
+        >3</div>
+      </card-swipe-item>
     </card-swipe>
 </template>
 
-<script>
-import { socketData, socket } from '../socket';
-import { useQuasar } from 'quasar';
-import { CardSwipe, CardSwipeItem } from '@eshengsky/vue-card-swipe';
-
-export default {
-name: 'Judge',
-components: {
-    CardSwipe,
-    CardSwipeItem
-  },
-data: function () {
-    return {
-    sData: socketData,
-    shareUrl: window.location.origin + "/join-room/" + this.$route.params.roomCode,
-    cardsPicked: [],
-    $q: useQuasar(),
-    }
-},
-}
-</script>
-
-
 <style>
-body {
-  max-width: 375px;
-  margin: 10px auto;
-}
 
 .detail-wrap {
   display: block;
@@ -86,3 +79,25 @@ body {
   color: #555;
 }
 </style>
+
+<script>
+import { socketData, socket } from '../socket';
+import { useQuasar } from 'quasar';
+import { CardSwipe, CardSwipeItem } from '@eshengsky/vue-card-swipe';
+
+export default {
+name: 'Judge',
+components: {
+    CardSwipe,
+    CardSwipeItem
+  },
+data: function () {
+    return {
+    sData: socketData,
+    $q: useQuasar(),
+    }
+},
+}
+</script>
+
+

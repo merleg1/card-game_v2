@@ -55,9 +55,24 @@ socket.on('cardsPlayed', () => {
 });
 
 socket.on('judge', (data) => {
+    console.log('judge');
     socketData.isJudging = true;
-    socketData.cardsToJudge = data;
+    socketData.currentQuestion = data.question;
+    data.cardsToJudge.forEach(a => {
+        let t = socketData.currentQuestion;
+        a.cards.forEach(c => {
+            if (t.includes('_')) {
+                t = t.replace('_', c.text);
+            }
+            else {
+                t += ' ' + c.text;
+            }
+        });
+        console.log(t);
+        socketData.cardsToJudge.push({ id: a.id, text: t });
+    });
     console.log(socketData.cardsToJudge);
+
     socket.emit('updateClientSocketData', socketData);
 });
 
@@ -67,7 +82,7 @@ socket.on('newRound', async (data) => {
     socketData.currentQuestion = data.question;
     socketData.currentQuestionPick = data.pick;
     const timer = ms => new Promise(res => setTimeout(res, ms))
-    for(let c of data.newCardsInHand) {
+    for (let c of data.newCardsInHand) {
         socketData.cardsInHand.push(c);
         await timer(500);
     }

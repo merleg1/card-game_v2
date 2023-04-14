@@ -16,9 +16,7 @@
       </div>
     </TransitionGroup>
   </div>
-  <div v-else>
-    Judge
-  </div>
+  <Judge v-else />
 </template>
 
 <style lang="scss">
@@ -187,9 +185,13 @@ $total: 8;
 <script>
 import { socketData, socket } from "../socket";
 import { useQuasar } from 'quasar'
+import Judge from './Judge.vue'
 
 export default {
   name: 'Game',
+  components: {
+    Judge,
+  },
   data: function () {
     return {
       sData: socketData,
