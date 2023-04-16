@@ -48,24 +48,3 @@ body {
 }
 </style>
 
-<script>
-import { socketData, socket } from '../socket';
-import { useQuasar } from 'quasar';
-import { CardSwipe, CardSwipeItem } from '@eshengsky/vue-card-swipe';
-
-export default {
-name: 'Judge',
-components: {
-    CardSwipe,
-    CardSwipeItem
-  },
-data: function () {
-    return {
-    sData: socketData,
-    $q: useQuasar(),
-    }
-},
-}
-</script>
-
-
