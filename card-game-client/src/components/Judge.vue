@@ -21,7 +21,7 @@ name: 'Judge',
 components: {
     'carousel3d': window['carousel-3d'].Carousel3d,
     'slide': window['carousel-3d'].Slide
-  }
+},
 data: function () {
     return {
     sData: socketData,
@@ -39,12 +39,11 @@ body {
   max-width: 375px;
   margin: 10px auto;
 }
-.carousel-3d-container {
-  .carousel-3d-slide {
+
+.carousel-3d-container .carousel-3d-slide {
     padding: 20px;
-    
-    .title { font-size: 22px; }
-  }
 }
+
+.carousel-3d-container .carousel-3d-slide .title { font-size: 22px; }
 </style>
 
