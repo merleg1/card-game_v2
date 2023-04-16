@@ -152,7 +152,7 @@ io.on('connection', (socket) => {
             }
             if (room.players.every(player => player.hasPlayed)) {
                 room.setCardsToJudge();
-                io.to(room.id).emit('judge', room.getCardsToJudgeForClient());
+                io.to(room.id).emit('judge', { question: room.currentQuestionCard.text, cardsToJudge: room.getCardsToJudgeForClient() });
             }
         }
     });
@@ -169,14 +169,14 @@ io.on('connection', (socket) => {
             if (room.players.every(player => player.hasVoted)) {
                 let winningCard = room.getWinningCard();
                 let winningPlayer = room.getPlayerById(winningCard.playerId);
-                if(winningPlayer != null){
+                if (winningPlayer != null) {
                     winningPlayer.score++;
                 }
                 io.to(room.id).emit('roundEnded', { winningCard: winningCard });
                 room.players.forEach(player => {
                     player.hasPlayed = false;
                     player.hasVoted = false;
-                    player.playedCards = [];              
+                    player.playedCards = [];
                 });
                 let cardsToDraw = room.currentQuestionCard.pick;
                 room.cardsToJudge.clear();
