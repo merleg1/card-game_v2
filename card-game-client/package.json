@@ -9,13 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@eshengsky/vue-card-swipe": "^1.0.2",
     "@quasar/extras": "^1.16.2",
     "quasar": "^2.11.10",
     "sass": "^1.32.12",
     "socket.io-client": "^4.6.1",
     "vue": "^3.2.47",
-    "vue-carousel-3d": "^1.0.1",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
