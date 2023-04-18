@@ -1,7 +1,9 @@
 <template>
     <swiper
-    :slides-per-view="3"
-    :space-between="50"
+    :slides-per-view="5"
+    :space-between="-50"
+    :loop="true"
+    :centered-slides="true"
     @swiper="onSwiper"
     @slideChange="onSlideChange">
       <swiper-slide  class="judging-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
@@ -50,5 +52,17 @@ setup() {
 
 
 <style>
+.judging-card {
+  width: 200px !important;;
+  height: 300px !important;;
+  background:#000;
+  border:1px solid white;
+  padding:20px;
+}
+
+.judging-card-label {
+  color:white;
+}
+
 </style>
 
