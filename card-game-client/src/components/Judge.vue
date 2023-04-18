@@ -3,8 +3,6 @@
   :effect="'cards'"
   :modules="modules"
   :grabCursor="true"
-  class="judging-cards-slider"
-  :centered-slides="true"
     @swiper="onSwiper" @slideChange="onSlideChange">
     <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
       <div class="judging-card-face">
@@ -56,9 +54,6 @@ export default {
 
 
 <style>
-.judging-cards-slider {
-  width: 60vw;
-}
 
 .judging-card {
   width: 200px !important;
@@ -77,9 +72,9 @@ export default {
 .judging-card:after {
   bottom: 0;
   content: "";
-  left: -120px;
+  left: -60px;
   position: absolute;
-  right: -120px;
+  right: -60px;
   top: 0px;
   z-index: 10;
 }
@@ -113,6 +108,20 @@ export default {
   font-size: 12px;
   font-weight: 700;
   padding: 16px 16px;
+}
+
+.swiper {
+  width: 200px;
+  height: 300px;
+}
+
+.swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
 }
 </style>
 
