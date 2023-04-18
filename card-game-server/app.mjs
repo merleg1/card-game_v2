@@ -122,7 +122,7 @@ io.on('connection', (socket) => {
                 io.to(room.id).emit('gameStarted');
                 room.round++;
                 room.players.forEach(player => {
-                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: player.cardsInHand });
+                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: player.cardsInHand, round: room.round });
                 });
             }
             else {
@@ -144,7 +144,6 @@ io.on('connection', (socket) => {
                 });
                 io.to(player.id).emit('cardsPlayed');
                 player.hasPlayed = true;
-                console.log(player.cardsInHand.length);
             }
             if (room.players.every(player => player.hasPlayed)) {
                 room.setCardsToJudge();
@@ -162,11 +161,15 @@ io.on('connection', (socket) => {
             let player = room.getPlayer(socket.userID);
             if (player != null && !player.hasVoted) {
                 player.hasVoted = true;
-                room.cardsToJudge.getJudgeCardById(data.cardId).votes++;
+                let card = room.getJudgeCardById(data);
+                if (card != null) {
+                    card.votes++;
+                    io.to(player.id).emit('judged');
+                }
             }
             if (room.players.every(player => player.hasVoted)) {
                 let winningCard = room.getWinningCard();
-                let winningPlayer = room.getPlayerById(winningCard.playerId);
+                let winningPlayer = room.getPlayer(winningCard.playerId);
                 if (winningPlayer != null) {
                     winningPlayer.score++;
                 }
@@ -177,16 +180,12 @@ io.on('connection', (socket) => {
                     player.playedCards = [];
                 });
                 let cardsToDraw = room.currentQuestionCard.pick;
-                room.cardsToJudge.clear();
+                room.cardsToJudge = [];
                 room.drawQuestionCard();
                 room.round++;
                 room.players.forEach(player => {
-                    let oldCards = player.cardsInHand;
-                    room.drawAnswerCards(player.id, cardsToDraw);
-                    let allCards = player.cardsInHand;
-                    let newCards = allCards.filter(card => !oldCards.includes(card));
-                    room.drawAnswerCards(player.id, cardsToDraw);
-                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: newCards });
+                    let newCards = room.drawAnswerCards(player.id, cardsToDraw);
+                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: newCards, round: room.round });
                 });
             }
         }

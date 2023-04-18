@@ -1,9 +1,13 @@
 <template>
-  <swiper
-  :effect="'cards'"
-  :modules="modules"
-  :grabCursor="true"
-    @swiper="onSwiper" @slideChange="onSlideChange">
+  <div class="text-h4 question" v-if="sData.hasJudged">
+    <q-spinner-hourglass color="purple" size="3em" />
+    <br />
+    You have voted. <br />
+    Grab a drink and wait for the other players.
+    <br />
+    <q-spinner-hourglass color="purple" size="3em" />
+  </div>
+  <swiper :effect="'cards'" :modules="modules" :grabCursor="true" @swiper="onSwiper" @slideChange="onSlideChange">
     <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
       <div class="judging-card-face">
         <div class="judging-card-label">
@@ -12,6 +16,9 @@
       </div>
     </swiper-slide>
   </swiper>
+  <Transition name="vote-button">
+    <q-btn :key="activeCardNumber" @click="vote" class="j-button" :label="'Vote for card number ' + (activeCardNumber+1)" color="primary" />
+  </Transition>
 </template>
 
 <script>
@@ -22,39 +29,45 @@ import 'swiper/css';
 
 import 'swiper/css/effect-cards';
 import { EffectCards } from 'swiper';
+import { Transition } from 'vue';
 
 export default {
   name: 'Judge',
   components: {
     Swiper,
     SwiperSlide,
+    Transition
   },
   data: function () {
     return {
       sData: socketData,
+      activeCardNumber: 0,
       $q: useQuasar(),
     }
   },
   setup() {
-    const onSwiper = (swiper) => {
-      console.log(swiper);
-    };
-    const onSlideChange = (s) => {
-      console.log(s);
-      console.log('slide change');
-    };
     return {
-      onSwiper,
-      onSlideChange,
       modules: [EffectCards],
     };
+  },
+  methods: {
+    vote() {
+      if (!this.sData.hasJudged) {
+        socket.emit('voteForCard', this.sData.cardsToJudge[this.activeCardNumber].id);
+      }
+    },
+    onSwiper: function (swiper) {
+      this.activeCardNumber = swiper.realIndex;
+    },
+    onSlideChange: function (swiper) {
+      this.activeCardNumber = swiper.realIndex;
+    },
   },
 }
 </script>
 
 
 <style>
-
 .judging-card {
   width: 200px !important;
   height: 300px !important;
@@ -123,5 +136,27 @@ export default {
   font-weight: bold;
   color: #fff;
 }
+
+.j-button {
+  padding: 0.5em 4em;
+  margin: 3em 0.5em 0.5em 0.5em;
+}
+
+.vote-button-enter-active,
+.vote-button-leave-active {
+  transition: 0.3s all ease;
+  opacity: 1;
+}
+
+.vote-button-enter-from {
+transform: translateX(100vw);
+opacity: 0;
+}
+
+.vote-button-leave-to {
+  transform: translateX(-100vw);
+  opacity: 0;
+}
+
 </style>
 

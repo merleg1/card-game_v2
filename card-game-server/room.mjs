@@ -43,6 +43,7 @@ export default class Room {
         let card = this.questionCards[index];
         this.questionCards.splice(index, 1);
         this.currentQuestionCard = card;
+        return card;
     }
 
     drawAnswerCard(playerId) {
@@ -50,12 +51,15 @@ export default class Room {
         let card = this.answerCards[index];
         this.answerCards.splice(index, 1);
         this.players.find(p => p.id == playerId).addCardToHand(card);
+        return card;
     }
 
     drawAnswerCards(playerId, amount) {
+        let cards = [];
         for (let i = 0; i < amount; i++) {
-            this.drawAnswerCard(playerId);
+            cards.push(this.drawAnswerCard(playerId));
         }
+        return cards;
     }
 
     setCardsToJudge() {

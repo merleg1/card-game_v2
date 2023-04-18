@@ -1,5 +1,13 @@
 <template>
   <div v-if="!sData.isJudging">
+    <div class="text-h4 question" v-if="sData.hasPlayed">
+      <q-spinner-hourglass color="purple" size="3em" />
+      <br />
+      You have played. <br />
+      Waiting for other players to play...
+      <br />
+      <q-spinner-hourglass color="purple" size="3em" />
+    </div>
     <Transition name="question">
       <div :key="sData.currentQuestion" class="text-h4 question" id="question">
         {{ sData.currentQuestion }}
@@ -38,10 +46,7 @@
 }
 
 .question-enter-from,
-.question-leave-to
-
-/* .slide-fade-leave-active for <2.1.8 */
-  {
+.question-leave-to {
   transform: translate(50vw, -20vh) rotate(30deg) scale(0.7) skew(-30deg);
   opacity: 0;
 }
@@ -196,7 +201,6 @@ export default {
     return {
       sData: socketData,
       shareUrl: window.location.origin + "/join-room/" + this.$route.params.roomCode,
-      cardsPicked: [],
       $q: useQuasar(),
       dragData: {
         move: false,
@@ -288,22 +292,20 @@ export default {
     endDrag: function () {
       if (this.dragData.move) {
         this.dragData.questionDiv = document.getElementById("question");
-        if (this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.cardsPicked.length < this.sData.currentQuestionPick && !this.sData.hasPlayed) {
-          console.log("colliding");
-          this.cardsPicked.push(this.dragData.card);
+        if (this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.sData.cardsPicked.length < this.sData.currentQuestionPick && !this.sData.hasPlayed) {
+          this.sData.cardsPicked.push(this.dragData.card);
           this.sData.cardsInHand.splice(this.sData.cardsInHand.indexOf(this.dragData.card), 1);
           if (this.sData.currentQuestion.includes("_")) {
-            this.sData.currentQuestion = this.sData.currentQuestion.replace("_", this.dragData.card.text);
+            this.sData.currentQuestion = this.sData.currentQuestion.replace("_", this.dragData.card.text.replaceAll(".", ""));
           }
           else {
             this.sData.currentQuestion += " " + this.dragData.card.text;
           }
 
-          if (this.cardsPicked.length >= this.sData.currentQuestionPick) {
-            console.log("play cards");
-            socket.emit("playCards", this.cardsPicked);
-            socket.emit('updateClientSocketData', socketData);
+          if (this.sData.cardsPicked.length >= this.sData.currentQuestionPick) {
+            socket.emit("playCards", this.sData.cardsPicked);
           }
+          socket.emit('updateClientSocketData', socketData);
         }
         else {
           this.dragData.cardDiv.style.transform = "";
