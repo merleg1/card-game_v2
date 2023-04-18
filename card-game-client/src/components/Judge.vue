@@ -29,12 +29,9 @@ components: {
     },
 data: function () {
     return {
-    sData: socketData,
-    shareUrl: window.location.origin + "/join-room/" + this.$route.params.roomCode,
-    cardsPicked: [],
-    $q: useQuasar(),
+      sData: socketData,
+      $q: useQuasar(),
     }
-    
 },
 setup() {
       const onSwiper = (swiper) => {

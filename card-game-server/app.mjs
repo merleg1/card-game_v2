@@ -45,27 +45,23 @@ io.use((socket, next) => {
             if (socket.clientSocketData.roomJoined) {
                 socket.join(socket.clientSocketData.roomCode);
             }
-            socket.socketIds = session.socketIds;
             return next();
         }
     }
 
     socket.sessionID = nanoid();
     socket.userID = nanoid();
-    socket.socketIds = [];
     socket.clientSocketData = new clientSocketData();
     next();
 });
 
 io.on('connection', (socket) => {
     console.log('New connection from ' + socket.id);
-    socket.socketIds.push(socket.id);
     socket.join(socket.userID);
 
     sessionStore.saveSession(socket.sessionID, {
         userID: socket.userID,
         clientSocketData: socket.clientSocketData,
-        socketIds: socket.socketIds,
         connected: true
     });
 
@@ -82,12 +78,12 @@ io.on('connection', (socket) => {
             rooms.push(room);
             console.log("Created room " + roomId + " for " + nick);
             let players = convertPlayersForClient(room.players)
-            emitToSession(socket.socketIds, 'players', players);
-            emitToSession(socket.socketIds, 'roomJoined', { roomCode: roomId, isAdmin: true });
+            io.to(socket.userID).emit( 'players', players);
+            io.to(socket.userID).emit( 'roomJoined', { roomCode: roomId, isAdmin: true });
 
         }
         else {
-            emitToSession(socket.socketIds, 'error', { message: "Error creating room" });
+            io.to(socket.userID).emit( 'error', { message: "Error creating room" });
         }
 
     });
@@ -103,16 +99,16 @@ io.on('connection', (socket) => {
                 room.addPlayer(socket.userID, nick);
                 let players = convertPlayersForClient(room.players);
                 io.to(room.id).emit('players', players);
-                emitToSession(socket.socketIds, 'roomJoined', { roomCode: data.roomCode, isAdmin: false });
+                io.to(socket.userID).emit( 'roomJoined', { roomCode: data.roomCode, isAdmin: false });
 
             }
             else {
                 console.log("Room not found");
-                emitToSession(socket.socketIds, 'error', { message: "Room not found" });
+                io.to(socket.userID).emit( 'error', { message: "Room not found" });
             }
         }
         else {
-            emitToSession(socket.socketIds, 'error', { message: "Error joining room" });
+            io.to(socket.userID).emit( 'error', { message: "Error joining room" });
         }
 
 
@@ -130,7 +126,7 @@ io.on('connection', (socket) => {
                 });
             }
             else {
-                emitToSession(socket.socketIds, 'error', { message: "Only admin can start game" });
+                io.to(socket.userID).emit( 'error', { message: "Only admin can start game" });
             }
         }
     });
@@ -209,7 +205,7 @@ io.on('connection', (socket) => {
                     let players = convertPlayersForClient(room.players);
                     io.to(room.id).emit('players', players);
                     socket.leave(room.id);
-                    emitToSession(socket.socketIds, 'roomLeft');
+                    io.to(socket.userID).emit( 'roomLeft');
                 }
             }
         }
@@ -221,17 +217,14 @@ io.on('connection', (socket) => {
         sessionStore.saveSession(socket.sessionID, {
             userID: socket.userID,
             clientSocketData: socket.clientSocketData,
-            socketIds: socket.socketIds,
             connected: true
         });
     });
 
     socket.on('disconnect', () => {
-        socket.socketIds = socket.socketIds.splice(socket.socketIds.indexOf(socket.id), 1);
         sessionStore.saveSession(socket.sessionID, {
             userID: socket.userID,
             clientSocketData: socket.clientSocketData,
-            socketIds: socket.socketIds,
             connected: false
         });
         socket.leave(socket.userID);
@@ -279,10 +272,4 @@ function isInRoom(userID) {
         }
     }
     return false;
-}
-
-function emitToSession(socketIds, event, data) {
-    for (let id of socketIds) {
-        io.to(id).emit(event, data);
-    }
 }
