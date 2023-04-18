@@ -148,7 +148,9 @@ io.on('connection', (socket) => {
             }
             if (room.players.every(player => player.hasPlayed)) {
                 room.setCardsToJudge();
-                io.to(room.id).emit('judge', { question: room.currentQuestionCard.text, cardsToJudge: room.getCardsToJudgeForClient() });
+                room.players.forEach(p => {
+                    io.to(p.id).emit('judge', { question: room.currentQuestionCard.text, cardsToJudge: room.getCardsToJudgeForClient(p.id) });
+                });
             }
         }
     });

@@ -49,7 +49,7 @@ export default class Room {
         let index = Math.floor(Math.random() * this.answerCards.length);
         let card = this.answerCards[index];
         this.answerCards.splice(index, 1);
-        this.players.find(p => p.id == playerId).addCardToHand(card); 
+        this.players.find(p => p.id == playerId).addCardToHand(card);
     }
 
     drawAnswerCards(playerId, amount) {
@@ -62,15 +62,17 @@ export default class Room {
         this.cardsToJudge = [];
         let i = 1;
         this.players.forEach(p => {
-            this.cardsToJudge.push({id: i, playerId: p.id, cards: p.playedCards, votes: 0});
+            this.cardsToJudge.push({ id: i, playerId: p.id, cards: p.playedCards, votes: 0 });
             i++;
         });
     }
 
-    getCardsToJudgeForClient() {
+    getCardsToJudgeForClient(playerId) {
         let cards = [];
         this.cardsToJudge.forEach(c => {
-            cards.push({id: c.id, cards: c.cards});
+            if (c.playerId != playerId) {
+                cards.push({ id: c.id, cards: c.cards });
+            }
         });
         return cards;
     }
