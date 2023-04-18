@@ -4,10 +4,10 @@
     :space-between="50"
     @swiper="onSwiper"
     @slideChange="onSlideChange">
-      <swiper-slide  class="playing-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
+      <swiper-slide  class="judging-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
         :id="card.setId + '.' + card.id">
-        <div class="playing-card-face">
-          <div class="playing-card-label">
+        <div class="judging-card-face">
+          <div class="judging-card-label">
             {{ card.text }}
           </div>
         </div>
