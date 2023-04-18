@@ -1,27 +1,32 @@
 <template>
-    <carousel3d class="judge" :width="200" :height="400" :inverse-scaling="50" :space="50" :perspective="15">
-      <slide  :index="i" class="playing-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
+    <swiper
+    :slides-per-view="3"
+    :space-between="50"
+    @swiper="onSwiper"
+    @slideChange="onSlideChange">
+      <swiper-slide  class="playing-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
         :id="card.setId + '.' + card.id">
         <div class="playing-card-face">
           <div class="playing-card-label">
             {{ card.text }}
           </div>
         </div>
-      </slide>
-    </carousel3d>
+      </swiper-slide>
+    </swiper >
 </template>
 
 <script>
 import { socketData, socket } from '../socket';
 import { useQuasar } from 'quasar';
-import { carousel3d, slide } from 'vue-carousel-3d';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import 'swiper/css';
 
 export default {
 name: 'Judge',
 components: {
-    'carousel3d': window['carousel-3d'].Carousel3d,
-    'slide': window['carousel-3d'].Slide
-},
+      Swiper,
+      SwiperSlide,
+    },
 data: function () {
     return {
     sData: socketData,
@@ -29,21 +34,24 @@ data: function () {
     cardsPicked: [],
     $q: useQuasar(),
     }
+    
 },
+setup() {
+      const onSwiper = (swiper) => {
+        console.log(swiper);
+      };
+      const onSlideChange = () => {
+        console.log('slide change');
+      };
+      return {
+        onSwiper,
+        onSlideChange,
+      };
+    },
 }
 </script>
 
 
 <style>
-body {
-  max-width: 375px;
-  margin: 10px auto;
-}
-
-.carousel-3d-container .carousel-3d-slide {
-    padding: 20px;
-}
-
-.carousel-3d-container .carousel-3d-slide .title { font-size: 22px; }
 </style>
 
