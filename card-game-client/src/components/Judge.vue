@@ -1,20 +1,19 @@
 <template>
-    <swiper
-    :slides-per-view="5"
-    :space-between="-50"
-    :loop="true"
-    :centered-slides="true"
-    @swiper="onSwiper"
-    @slideChange="onSlideChange">
-      <swiper-slide  class="judging-card" v-for="card in sData.cardsToJudge" :key="card.setId + '.' + card.id"
-        :id="card.setId + '.' + card.id">
-        <div class="judging-card-face">
-          <div class="judging-card-label">
-            {{ card.text }}
-          </div>
+  <swiper
+  :effect="'cards'"
+  :modules="modules"
+  :grabCursor="true"
+  class="judging-cards-slider"
+  :centered-slides="true"
+    @swiper="onSwiper" @slideChange="onSlideChange">
+    <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
+      <div class="judging-card-face">
+        <div class="judging-card-label">
+          {{ card.text }}
         </div>
-      </swiper-slide>
-    </swiper >
+      </div>
+    </swiper-slide>
+  </swiper>
 </template>
 
 <script>
@@ -23,46 +22,97 @@ import { useQuasar } from 'quasar';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 
+import 'swiper/css/effect-cards';
+import { EffectCards } from 'swiper';
+
 export default {
-name: 'Judge',
-components: {
-      Swiper,
-      SwiperSlide,
-    },
-data: function () {
+  name: 'Judge',
+  components: {
+    Swiper,
+    SwiperSlide,
+  },
+  data: function () {
     return {
       sData: socketData,
       $q: useQuasar(),
     }
-},
-setup() {
-      const onSwiper = (swiper) => {
-        console.log(swiper);
-      };
-      const onSlideChange = () => {
-        console.log('slide change');
-      };
-      return {
-        onSwiper,
-        onSlideChange,
-      };
-    },
+  },
+  setup() {
+    const onSwiper = (swiper) => {
+      console.log(swiper);
+    };
+    const onSlideChange = (s) => {
+      console.log(s);
+      console.log('slide change');
+    };
+    return {
+      onSwiper,
+      onSlideChange,
+      modules: [EffectCards],
+    };
+  },
 }
 </script>
 
 
 <style>
-.judging-card {
-  width: 200px !important;;
-  height: 300px !important;;
-  background:#000;
-  border:1px solid white;
-  padding:20px;
+.judging-cards-slider {
+  width: 60vw;
 }
+
+.judging-card {
+  width: 200px !important;
+  height: 300px !important;
+  background: #000;
+  border: 1px solid white;
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  position: relative;
+}
+
+.judging-card:after {
+  bottom: 0;
+  content: "";
+  left: -120px;
+  position: absolute;
+  right: -120px;
+  top: 0px;
+  z-index: 10;
+}
+
+.judging-card-face {
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.judging-card-face:after {
+  -webkit-animation: none;
+  animation: none;
+  background: #fff;
+  bottom: 0;
+  content: "";
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
 
 .judging-card-label {
-  color:white;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 16px 16px;
 }
-
 </style>
 
