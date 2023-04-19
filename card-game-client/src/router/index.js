@@ -4,6 +4,11 @@ import ErrorPage from '../views/ErrorPage.vue'
 const routes = [
     {
         path: '/',
+        name: 'Starting',
+        component: () => import('../views/StartingScreen.vue')
+    },
+    {
+        path: '/Home',
         name: 'Home',
         component: () => import('../views/Home.vue')
     },
