@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-md lobby">
-        <div class="text-h4 title">Room: {{ sData.roomCode }}</div>
+        <div class="text-h4 title title-clashDisplay">Room: {{ sData.roomCode }}</div>
         <div class="share-div">
             <span class="share" @click="copyShareUrl">
                 <q-icon name="share" />

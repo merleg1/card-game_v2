@@ -1,7 +1,7 @@
 <template>
     <div class="q-pa-md create-room-form">
         <q-form @submit="onSubmit" @reset="onReset" class="q-gutter-md">
-            <div class="text-h4">Join a existing room</div>
+            <div class="text-h4 title-clashDisplay">Join a existing room</div>
             <q-input filled v-model="roomCode" label="Your roomcode *" hint="Code to join a room" lazy-rules :rules="[
                 val => val && val.length == 8 || 'Please type roomcode with exactly 8 characters'           
             ]" />

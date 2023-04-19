@@ -15,8 +15,13 @@ h1 {
   line-height: 1.1;
 }
 
+.title-clashDisplay {
+  font-family: 'ClashDisplay-Semibold', sans-serif;
+}
+
 #app {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  font-family: 'ClashDisplay-Medium', sans-serif;
 }

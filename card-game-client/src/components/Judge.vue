@@ -78,12 +78,13 @@ export default {
   /* IE 10 and IE 11 */
   user-select: none;
   /* Standard syntax */
-  font-family: Georgia, serif;
+  font-family: 'ClashDisplay-Semibold', sans-serif;
   margin-bottom: 2em;
   width: 50vw;
 }
 
 .judging-card {
+  border-radius: 5px;
   width: 200px !important;
   height: 300px !important;
   background: #000;
@@ -115,6 +116,7 @@ export default {
   position: absolute;
   right: 0;
   top: 0;
+  border-radius: 5px;
 }
 
 .judging-card-face:after {

@@ -58,7 +58,7 @@
   /* IE 10 and IE 11 */
   user-select: none;
   /* Standard syntax */
-  font-family: Georgia, serif;
+  font-family: 'ClashDisplay-Semibold', sans-serif;
   margin-bottom: 2em;
   width: 50vw;
 }
@@ -110,6 +110,19 @@
   margin: 0 -25px;
   position: relative;
   width: 100px;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+  cursor: -o-grab;
+  cursor: -ms-grab;
+  cursor: grab;
+}
+
+.playing-card:active {
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+  cursor: -o-grabbing;
+  cursor: -ms-grabbing;
+  cursor: grabbing;
 }
 
 .playing-card:after {
@@ -131,6 +144,7 @@
   right: 0;
   top: 0;
   transition: 800ms cubic-bezier(0.19, 1, 0.22, 1) transform;
+  border-radius: 5px;
 }
 
 .playing-card-face:after {
