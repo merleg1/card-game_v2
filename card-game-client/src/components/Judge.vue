@@ -71,6 +71,10 @@ export default {
 
 
 <style>
+body {
+  overflow:hidden;
+}
+
 .waiting-text {
   -webkit-user-select: none;
   /* Safari */
@@ -85,10 +89,11 @@ export default {
 
 .judging-card {
   border-radius: 5px;
-  width: 200px !important;
-  height: 300px !important;
+  width: 250px !important;
+  height: 360px !important;
   background: #000;
-  border: 1px solid white;
+  box-shadow: 0 0 10px rgba(100,100,100,.25);
+  border-radius:10px;
   -webkit-user-select: none;
   /* Safari */
   -ms-user-select: none;
@@ -135,14 +140,15 @@ export default {
 
 .judging-card-label {
   color: white;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 16px 16px;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 25px;
+  text-align: left;
 }
 
 .swiper {
-  width: 200px;
-  height: 300px;
+  width: 250px;
+  height: 360px;
 }
 
 .swiper-slide {
@@ -166,12 +172,12 @@ export default {
 }
 
 .vote-button-enter-from {
-  transform: translateX(100vw);
+  transform: translateX(50vw);
   opacity: 0;
 }
 
 .vote-button-leave-to {
-  transform: translateX(-100vw);
+  transform: translateX(-50vw);
   opacity: 0;
 }
 </style>

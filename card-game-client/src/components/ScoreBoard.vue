@@ -1,10 +1,10 @@
 <template>
     <div class="text-h4 scoreboard-title title-clashDisplay">Scoreboard:</div>
-    <div class="player-table">
-        <q-toolbar class="bg-primary text-white shadow-2">
+    <div class="player-table bg-primary rounded">
+        <q-toolbar class="text-white">
             <q-toolbar-title>Players</q-toolbar-title>
         </q-toolbar>
-        <q-list class="rounded-borders player-list" dense bordered separator>
+        <q-list class="rounded-borders bg-dark rounded border-p player-list" dense bordered separator>
             <q-scroll-area class="player-list">
                 <q-item v-for="player in orderedPlayers">
                     <q-item-section avatar>
@@ -28,6 +28,14 @@
 </template>
 
 <style>
+.rounded {
+    border-radius:15px!important;
+}
+
+.border-p {
+    border:1px solid #9B61FE;
+}
+
 .scoreboard-title {
     margin-bottom: 0.5em;
     text-align: center;

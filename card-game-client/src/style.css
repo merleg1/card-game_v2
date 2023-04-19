@@ -8,6 +8,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh !important;
+  font-weight: 500;
 }
 
 h1 {

@@ -2,9 +2,9 @@
   <q-btn class="score-button" label="Show scoreboard" color="primary" @click="showScoreBoard = true" />
   <div v-if="!sData.isJudging">
     <div class="text-h5 waiting-text" v-if="sData.hasPlayed">
-      <q-spinner-hourglass color="purple" size="2em" />
+      <q-spinner-hourglass color="primary" size="2em" />
       Waiting for other players. 
-      <q-spinner-hourglass color="purple" size="2em" />
+      <q-spinner-hourglass color="primary" size="2em" />
     </div>
     <Transition name="question">
       <div :key="sData.currentQuestion" class="text-h4 question" id="question">
@@ -106,10 +106,10 @@
   /* IE 10 and IE 11 */
   user-select: none;
   /* Standard syntax */
-  height: 150px;
+  height: 170px;
   margin: 0 -25px;
   position: relative;
-  width: 100px;
+  width: 120px;
   cursor: -webkit-grab;
   cursor: -moz-grab;
   cursor: -o-grab;
@@ -144,7 +144,7 @@
   right: 0;
   top: 0;
   transition: 800ms cubic-bezier(0.19, 1, 0.22, 1) transform;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 .playing-card-face:after {
@@ -158,12 +158,16 @@
   position: absolute;
   right: 0;
   top: 0;
+  border-radius: 10px;
 }
 
 .playing-card-label {
-  font-size: 10px;
+  font-size: 11px;
+  line-height: 1;
   font-weight: 700;
   padding: 14px 14px;
+  color:#000;
+  text-align: left;
 }
 
 $total: 8;
@@ -178,14 +182,14 @@ $total: 8;
   .playing-card:nth-child(#{$i + 1}) {
     .playing-card-face {
       background: linear-gradient(-135deg, hsla($hue, 100%, 80%, 1),
-          hsla($hue, 90%, 45%, 1));
+          hsla($hue, 90%, 60%, 1));
       box-shadow:
         -5px 5px 5px hsla(0, 0%, 0%, 0.15),
         inset 0 0 0 2px hsla($hue, 100%, 80%, 0.75);
       transform: translateY($offset * 1px) rotate($rotation * 1deg);
 
       .playing-card-label {
-        color: hsla($hue, 100%, 43%, 1);
+        color: hsla($hue, 100%, 20%, 1);
         text-shadow: -0.025em 0.025em 0 hsla($hue, 100%, 75%, 1);
       }
     }

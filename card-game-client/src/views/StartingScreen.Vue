@@ -1,9 +1,11 @@
 <template>
+    <Transition>
     <div class="loading-wrapper">
         <div class="loading-text">
         <p>Prinzipe<br> <span class="ml-1">Öber</span><br> <span class="ml-2">Bord</span></p>
         </div>
     </div>
+    </Transition>
 </template>
 
 <style>
@@ -81,7 +83,7 @@ export default {
         };
     },
     created(){
-      setTimeout( () => this.$router.push({ path: '/Home'}), 5000);
+      setTimeout( () => this.$router.push({ path: '/Home'}), 4000);
     }
 }
 </script>

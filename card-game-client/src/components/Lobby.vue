@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-md lobby">
-        <div class="text-h4 title title-clashDisplay">Room: {{ sData.roomCode }}</div>
+        <div class="text-h4 title title-clashDisplay">Room <span class="text-primary">{{ sData.roomCode }}</span></div>
         <div class="share-div">
             <span class="share" @click="copyShareUrl">
                 <q-icon name="share" />
@@ -11,10 +11,11 @@
                 </span>
             </span>
         </div>
-        <q-toolbar class="bg-primary text-white shadow-2">
+        <div class="bg-primary rounded">
+        <q-toolbar class="rounded text-white">
             <q-toolbar-title>Players</q-toolbar-title>
         </q-toolbar>
-        <q-list class="rounded-borders player-list" dense bordered separator>
+        <q-list class="rounded-borders bg-dark rounded border-p player-list" dense bordered separator>
             <q-scroll-area class="player-list">
                 <q-item v-for="player in sData.players">
                     <q-item-section avatar>
@@ -31,6 +32,7 @@
                 </q-item>
             </q-scroll-area>
         </q-list>
+        </div>
         <div class="start-game">
             <div v-if="sData.isAdmin">
                 <q-btn @click="startGame" class="l-button" label="Start game" color="primary" />
@@ -48,6 +50,15 @@
 </template>
 
 <style>
+
+.rounded {
+    border-radius:15px!important;
+}
+
+.border-p {
+    border:1px solid #9B61FE;
+}
+
 .title {
     margin-bottom: 0.5em;
 }
@@ -57,7 +68,7 @@
 }
 
 .share-div {
-    margin-bottom: 1em;
+    margin-bottom: 2em;
 }
 
 .share {
@@ -65,7 +76,7 @@
 }
 
 .share-url {
-    color: #35a2ff;
+    color: #9B61FE;
 }
 
 .player-list {
