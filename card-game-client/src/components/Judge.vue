@@ -1,5 +1,5 @@
 <template>
-  <div class="text-h5 question" v-if="sData.hasJudged">
+  <div class="text-h5 waiting-text" v-if="sData.hasJudged">
     <q-spinner-hourglass color="purple" size="2em" />
     <br />
     You have voted. <br />
@@ -7,18 +7,21 @@
     <br />
     <q-spinner-hourglass color="purple" size="2em" />
   </div>
-  <swiper :effect="'cards'" :modules="modules" :grabCursor="true" @swiper="onSwiper" @slideChange="onSlideChange">
-    <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
-      <div class="judging-card-face">
-        <div class="judging-card-label">
-          {{ card.text }}
+  <div>
+    <swiper :effect="'cards'" :modules="modules" :grabCursor="true" @swiper="onSwiper" @slideChange="onSlideChange">
+      <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
+        <div class="judging-card-face">
+          <div class="judging-card-label">
+            {{ card.text }}
+          </div>
         </div>
-      </div>
-    </swiper-slide>
-  </swiper>
-  <Transition name="vote-button">
-    <q-btn :key="activeCardNumber" @click="vote" class="j-button" :label="'Vote for card number ' + (activeCardNumber+1)" color="primary" />
-  </Transition>
+      </swiper-slide>
+    </swiper>
+    <Transition name="vote-button" v-if="!sData.hasJudged">
+      <q-btn :key="activeCardNumber" @click="vote" class="j-button"
+        :label="'Vote for card number ' + (activeCardNumber + 1)" color="primary" />
+    </Transition>
+  </div>
 </template>
 
 <script>
@@ -68,6 +71,18 @@ export default {
 
 
 <style>
+.waiting-text {
+  -webkit-user-select: none;
+  /* Safari */
+  -ms-user-select: none;
+  /* IE 10 and IE 11 */
+  user-select: none;
+  /* Standard syntax */
+  font-family: Georgia, serif;
+  margin-bottom: 2em;
+  width: 50vw;
+}
+
 .judging-card {
   width: 200px !important;
   height: 300px !important;
@@ -149,14 +164,13 @@ export default {
 }
 
 .vote-button-enter-from {
-transform: translateX(100vw);
-opacity: 0;
+  transform: translateX(100vw);
+  opacity: 0;
 }
 
 .vote-button-leave-to {
   transform: translateX(-100vw);
   opacity: 0;
 }
-
 </style>
 

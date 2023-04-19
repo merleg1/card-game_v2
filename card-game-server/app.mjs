@@ -174,6 +174,9 @@ io.on('connection', (socket) => {
                     io.to(player.id).emit('judged');
                 }
             }
+            else {
+                io.to(player.id).emit('error', { message: "You have already voted" });
+            }
             if (room.players.every(player => player.hasVoted)) {
                 let winningCards = room.getWinningCards();
                 let winningPlayers = [];

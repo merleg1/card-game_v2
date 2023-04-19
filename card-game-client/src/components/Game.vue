@@ -1,12 +1,9 @@
 <template>
   <q-btn class="score-button" label="Show scoreboard" color="primary" @click="showScoreBoard = true" />
   <div v-if="!sData.isJudging">
-    <div class="text-h5 question" v-if="sData.hasPlayed">
+    <div class="text-h5 waiting-text" v-if="sData.hasPlayed">
       <q-spinner-hourglass color="purple" size="2em" />
-      <br />
-      You have played. <br />
-      Waiting for other players to play...
-      <br />
+      Waiting for other players. 
       <q-spinner-hourglass color="purple" size="2em" />
     </div>
     <Transition name="question">
@@ -53,7 +50,8 @@
   margin: 1em;
 }
 
-.question {
+.question,
+.waiting-text {
   -webkit-user-select: none;
   /* Safari */
   -ms-user-select: none;
@@ -321,7 +319,7 @@ export default {
     endDrag: function () {
       if (this.dragData.move) {
         this.dragData.questionDiv = document.getElementById("question");
-        if (this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.sData.cardsPicked.length < this.sData.currentQuestionPick && !this.sData.hasPlayed) {
+        if (this.dragData.questionDiv != null && this.dragData.questionDiv != undefined && this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.sData.cardsPicked.length < this.sData.currentQuestionPick && !this.sData.hasPlayed) {
           this.sData.cardsPicked.push(this.dragData.card);
           this.sData.cardsInHand.splice(this.sData.cardsInHand.indexOf(this.dragData.card), 1);
           if (this.sData.currentQuestion.includes("_")) {
