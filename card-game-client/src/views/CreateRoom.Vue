@@ -7,6 +7,11 @@
                 val => val && val.length >= nicknameMinLength && val.length <= nicknameMaxLength || 'Your nickname must be between ' + nicknameMinLength + ' and ' + nicknameMaxLength + ' characters'
             ]" />
 
+            <q-input filled type="number" v-model="numberOfRounds" label="Number of Rounds to play *" lazy-rules :rules="[
+                val => val !== null && val !== '' || 'Please type Number of Rounds',
+                val => val > 0 && val < 100 || 'Please type a Number of Rounds between 1 and 50'
+            ]" />
+
             <div>
                 <q-btn label="Submit" type="submit" color="primary" />
                 <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
@@ -38,6 +43,7 @@ export default {
             nicknameMaxLength: 12,
             nicknameMinLength: 4,
             nickname: '',
+            numberOfRounds: 5,
             $q: useQuasar()
         };
     },
@@ -54,7 +60,7 @@ export default {
                 icon: 'cloud_done',
                 message: 'Data submitted'
             })
-            socket.emit("createRoom", { nickname: this.nickname });
+            socket.emit("createRoom", { nickname: this.nickname, numberOfRounds: this.numberOfRounds });
         },
         onReset() {
             this.nickname = '';

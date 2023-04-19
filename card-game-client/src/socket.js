@@ -124,8 +124,32 @@ socket.on('roundEnded', (data) => {
     });
 });
 
+socket.on('gameEnded', (data) => {
+    let text = '';
+    data.winners.forEach((p, i) => {
+        if (i === 0) {
+            text += p;
+        }
+        else if (i === data.winners.length - 1) {
+            text += ' and ' + p;
+        }
+        else {
+            text += ', ' + p;
+        }
+    });
+
+    Notify.create({
+        message: `${text} won the game!`,
+        position: 'center',
+    });
+
+    socketData = reactive(new clientSocketData());
+    socket.emit('updateClientSocketData', socketData);
+    Router.push('/');
+});
+
 socket.on('roomLeft', () => {
-    socketData.roomJoined = false;
+    // socketData.roomJoined = false;
     socketData = reactive(new clientSocketData());
     socket.emit('updateClientSocketData', socketData);
     Router.push('/');

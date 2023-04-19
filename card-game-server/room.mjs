@@ -5,8 +5,9 @@ import Card from './card.mjs';
 export default class Room {
     players = [];
 
-    constructor(id, allCards, selectedSets = [0]) {
+    constructor(id, allCards, numberOfRounds,  selectedSets = [0]) {
         this.id = id;
+        this.numberOfRounds = numberOfRounds;
         this.selectedSets = selectedSets;
         this.questionCards = allCards.questionCards.filter(c => this.selectedSets.includes(c.setId));
         this.answerCards = allCards.answerCards.filter(c => this.selectedSets.includes(c.setId));
@@ -97,5 +98,19 @@ export default class Room {
             }
         });
         return winningCards;
+    }
+
+    getGameWinners() {
+        let winningPlayers = [];
+        let winningScore = 0;
+        this.players.forEach(p => {
+            if (p.score > winningScore) {
+                winningScore = p.score;
+                winningPlayers = [p];
+            } else if (p.score == winningScore) {
+                winningPlayers.push(p);
+            }
+        });
+        return winningPlayers;
     }
 }

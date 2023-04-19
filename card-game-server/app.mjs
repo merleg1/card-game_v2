@@ -69,21 +69,23 @@ io.on('connection', (socket) => {
 
     socket.on('createRoom', (data) => {
 
-        if (data.nickname != null && data.nickname != "" && data.nickname != undefined && !isInRoom(socket.userID)) {
+        let nickNameVal = data.nickname != null && data.nickname != "" && data.nickname != undefined;
+        let numberOfRoundsVal = data.numberOfRounds != null && data.numberOfRounds != "" && data.numberOfRounds != undefined && data.numberOfRounds > 0 && data.numberOfRounds < 100;
+        if (nickNameVal && numberOfRoundsVal && !isInRoom(socket.userID)) {
             let roomId = nanoid(8);
             socket.join(roomId);
-            let room = new Room(roomId, allCards);
+            let room = new Room(roomId, allCards, data.numberOfRounds);
             let nick = data.nickname.slice(0, 12);
             room.addPlayer(socket.userID, nick, true);
             rooms.push(room);
             console.log("Created room " + roomId + " for " + nick);
             let players = convertPlayersForClient(room.players)
-            io.to(socket.userID).emit( 'players', players);
-            io.to(socket.userID).emit( 'roomJoined', { roomCode: roomId, isAdmin: true });
+            io.to(socket.userID).emit('players', players);
+            io.to(socket.userID).emit('roomJoined', { roomCode: roomId, isAdmin: true });
 
         }
         else {
-            io.to(socket.userID).emit( 'error', { message: "Error creating room" });
+            io.to(socket.userID).emit('error', { message: "Error creating room" });
         }
 
     });
@@ -99,16 +101,16 @@ io.on('connection', (socket) => {
                 room.addPlayer(socket.userID, nick);
                 let players = convertPlayersForClient(room.players);
                 io.to(room.id).emit('players', players);
-                io.to(socket.userID).emit( 'roomJoined', { roomCode: data.roomCode, isAdmin: false });
+                io.to(socket.userID).emit('roomJoined', { roomCode: data.roomCode, isAdmin: false });
 
             }
             else {
                 console.log("Room not found");
-                io.to(socket.userID).emit( 'error', { message: "Room not found" });
+                io.to(socket.userID).emit('error', { message: "Room not found" });
             }
         }
         else {
-            io.to(socket.userID).emit( 'error', { message: "Error joining room" });
+            io.to(socket.userID).emit('error', { message: "Error joining room" });
         }
 
 
@@ -118,15 +120,20 @@ io.on('connection', (socket) => {
         let room = getRoom(data.roomCode);
         if (room != null) {
             if (isAdmin(socket.userID, room)) {
-                room.startGame();
-                io.to(room.id).emit('gameStarted');
-                room.round++;
-                room.players.forEach(player => {
-                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: player.cardsInHand, round: room.round });
-                });
+                if(room.players.length > 3){
+                    room.startGame();
+                    io.to(room.id).emit('gameStarted');
+                    room.round++;
+                    room.players.forEach(player => {
+                        io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: player.cardsInHand, round: room.round });
+                    });
+                }
+                else {
+                    io.to(socket.userID).emit('error', { message: "Not enough players" });
+                }          
             }
             else {
-                io.to(socket.userID).emit( 'error', { message: "Only admin can start game" });
+                io.to(socket.userID).emit('error', { message: "Only admin can start game" });
             }
         }
     });
@@ -191,10 +198,19 @@ io.on('connection', (socket) => {
                 room.round++;
                 let clientPlayers = convertPlayersForClient(room.players);
                 io.to(room.id).emit('players', clientPlayers);
-                room.players.forEach(player => {
-                    let newCards = room.drawAnswerCards(player.id, cardsToDraw);
-                    io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: newCards, round: room.round });
-                });
+                if (room.round > room.numberOfRounds) {
+                    let winners = room.getGameWinners();
+                    let winnerNames = winners.map(p => p.name)
+                    io.to(room.id).emit('gameEnded', { winners: winnerNames });
+                    rooms.splice(rooms.indexOf(room), 1);
+                    io.in(room.id).socketsLeave(room.id);
+                }
+                else {
+                    room.players.forEach(player => {
+                        let newCards = room.drawAnswerCards(player.id, cardsToDraw);
+                        io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: newCards, round: room.round });
+                    });
+                }
             }
         }
     });
@@ -214,7 +230,7 @@ io.on('connection', (socket) => {
                     let players = convertPlayersForClient(room.players);
                     io.to(room.id).emit('players', players);
                     socket.leave(room.id);
-                    io.to(socket.userID).emit( 'roomLeft');
+                    io.to(socket.userID).emit('roomLeft');
                 }
             }
         }
