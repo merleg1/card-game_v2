@@ -9,6 +9,7 @@ body {
   min-width: 320px;
   min-height: 100vh !important;
   font-weight: 500;
+  overflow: hidden;
 }
 
 h1 {

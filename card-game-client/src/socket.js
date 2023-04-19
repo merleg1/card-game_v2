@@ -70,10 +70,10 @@ socket.on('judge', (data) => {
         let t = socketData.currentQuestion;
         a.cards.forEach(c => {
             if (t.includes('_')) {
-                t = t.replace('_', c.text.replaceAll('.', ''));
+                t = t.replace('_', `<span class="answer-text">${c.text.replaceAll('.', '')}</span>`);
             }
             else {
-                t += ' ' + c.text;
+                t += ` <span class="question-text">${c.text}</span>`;
             }
         });
         socketData.cardsToJudge.push({ id: a.id, text: t });
@@ -93,7 +93,7 @@ socket.on('newRound', async (data) => {
     socketData.isJudging = false;
     socketData.cardsToJudge = [];
     socketData.cardsPicked = [];
-    socketData.currentQuestion = data.question;
+    socketData.currentQuestion = data.question.replaceAll('_', '<span class="answer-text">___</span>');
     socketData.currentQuestionPick = data.pick;
     console.log(data.newCardsInHand);
     const timer = ms => new Promise(res => setTimeout(res, ms))
@@ -152,5 +152,5 @@ socket.on('roomLeft', () => {
     // socketData.roomJoined = false;
     socketData = reactive(new clientSocketData());
     socket.emit('updateClientSocketData', socketData);
-    Router.push('/');
+    Router.push('/Home');
 });

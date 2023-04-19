@@ -7,8 +7,7 @@
       <q-spinner-hourglass color="primary" size="2em" />
     </div>
     <Transition name="question">
-      <div :key="sData.currentQuestion" class="text-h4 question" id="question">
-        {{ sData.currentQuestion }}
+      <div :key="sData.currentQuestion" v-html="sData.currentQuestion" class="text-h4 question" id="question">
       </div>
     </Transition>
     <TransitionGroup name="hand" class="hand" tag="div">
@@ -63,6 +62,10 @@
   width: 50vw;
 }
 
+.answer-text {
+  color: var(--q-primary);
+}
+
 .question-enter-active,
 .question-leave-active {
   transition: all 0.3s ease;
@@ -106,10 +109,10 @@
   /* IE 10 and IE 11 */
   user-select: none;
   /* Standard syntax */
-  height: 170px;
+  height: 150px;
   margin: 0 -25px;
   position: relative;
-  width: 120px;
+  width: 100px;
   cursor: -webkit-grab;
   cursor: -moz-grab;
   cursor: -o-grab;
@@ -340,11 +343,11 @@ export default {
         if (this.dragData.questionDiv != null && this.dragData.questionDiv != undefined && this.doElsCollide(this.dragData.cardDiv, this.dragData.questionDiv) && this.sData.cardsPicked.length < this.sData.currentQuestionPick && !this.sData.hasPlayed) {
           this.sData.cardsPicked.push(this.dragData.card);
           this.sData.cardsInHand.splice(this.sData.cardsInHand.indexOf(this.dragData.card), 1);
-          if (this.sData.currentQuestion.includes("_")) {
-            this.sData.currentQuestion = this.sData.currentQuestion.replace("_", this.dragData.card.text.replaceAll(".", ""));
+          if (this.sData.currentQuestion.includes("___")) {
+            this.sData.currentQuestion = this.sData.currentQuestion.replace("___", this.dragData.card.text.replaceAll(".", ""));
           }
           else {
-            this.sData.currentQuestion += " " + this.dragData.card.text;
+            this.sData.currentQuestion += ` <span class="answer-text">${this.dragData.card.text}</span>`;
           }
 
           if (this.sData.cardsPicked.length >= this.sData.currentQuestionPick) {

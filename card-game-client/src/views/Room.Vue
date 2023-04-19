@@ -18,7 +18,7 @@ export default {
     },
     mounted() {
         if (!this.sData.roomJoined) {
-            this.$router.push('/');
+            this.$router.push('/Home');
         }
     },
     components: {

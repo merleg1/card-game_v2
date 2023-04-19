@@ -11,8 +11,7 @@
     <swiper :effect="'cards'" :modules="modules" :grabCursor="true" @swiper="onSwiper" @slideChange="onSlideChange">
       <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
         <div class="judging-card-face">
-          <div class="judging-card-label">
-            {{ card.text }}
+          <div class="judging-card-label" v-html="card.text">
           </div>
         </div>
       </swiper-slide>
@@ -71,8 +70,9 @@ export default {
 
 
 <style>
-body {
-  overflow:hidden;
+
+.answer-text {
+  color: var(--q-primary);
 }
 
 .waiting-text {
@@ -90,7 +90,7 @@ body {
 .judging-card {
   border-radius: 5px;
   width: 250px !important;
-  height: 360px !important;
+  height: 375px !important;
   background: #000;
   box-shadow: 0 0 10px rgba(100,100,100,.25);
   border-radius:10px;

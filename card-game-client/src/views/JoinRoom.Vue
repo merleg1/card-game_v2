@@ -15,7 +15,7 @@
                 <q-btn label="Reset" type="reset" color="primary" flat class="q-ml-sm" />
             </div>
         </q-form>
-        <div class="go-back"><router-link to="/"><q-icon name="arrow_back" /> Go back</router-link></div>
+        <div class="go-back"><router-link to="/Home"><q-icon name="arrow_back" /> Go back</router-link></div>
     </div>
 </template>
 
