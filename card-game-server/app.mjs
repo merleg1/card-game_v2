@@ -168,12 +168,18 @@ io.on('connection', (socket) => {
                 }
             }
             if (room.players.every(player => player.hasVoted)) {
-                let winningCard = room.getWinningCard();
-                let winningPlayer = room.getPlayer(winningCard.playerId);
-                if (winningPlayer != null) {
-                    winningPlayer.score++;
-                }
-                io.to(room.id).emit('roundEnded', { winningCard: winningCard });
+                let winningCards = room.getWinningCards();
+                let winningPlayers = [];
+                winningCards.forEach(card => {
+                    let player = room.getPlayer(card.playerId);
+                    if (player != null) {
+                        winningPlayers.push(player);
+                    }
+                });
+                winningPlayers.forEach(player => {
+                    player.score++;
+                });
+                io.to(room.id).emit('roundEnded', { winningPlayerNames: winningPlayers.map(p => p.name) });
                 room.players.forEach(player => {
                     player.hasPlayed = false;
                     player.hasVoted = false;
@@ -183,6 +189,8 @@ io.on('connection', (socket) => {
                 room.cardsToJudge = [];
                 room.drawQuestionCard();
                 room.round++;
+                let clientPlayers = convertPlayersForClient(room.players);
+                io.to(room.id).emit('players', clientPlayers);
                 room.players.forEach(player => {
                     let newCards = room.drawAnswerCards(player.id, cardsToDraw);
                     io.to(player.id).emit('newRound', { question: room.currentQuestionCard.text, pick: room.currentQuestionCard.pick, newCardsInHand: newCards, round: room.round });
@@ -259,7 +267,7 @@ function isAdmin(userID, room) {
 function convertPlayersForClient(players) {
     let convertedPlayers = [];
     for (let p of players) {
-        convertedPlayers.push({ name: p.name, isAdmin: p.isAdmin });
+        convertedPlayers.push({ name: p.name, isAdmin: p.isAdmin, score: p.score });
     }
     return convertedPlayers;
 }

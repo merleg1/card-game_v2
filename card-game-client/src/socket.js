@@ -104,6 +104,26 @@ socket.on('newRound', async (data) => {
     socket.emit('updateClientSocketData', socketData);
 });
 
+socket.on('roundEnded', (data) => {
+    let text = '';
+    data.winningPlayerNames.forEach((p, i) => {
+        if (i === 0) {
+            text += p;
+        }
+        else if (i === data.winningPlayerNames.length - 1) {
+            text += ' and ' + p;
+        }
+        else {
+            text += ', ' + p;
+        }
+    });
+
+    Notify.create({
+        message: `${text} won the round!`,
+        position: 'center',
+    });
+});
+
 socket.on('roomLeft', () => {
     socketData.roomJoined = false;
     socketData = reactive(new clientSocketData());

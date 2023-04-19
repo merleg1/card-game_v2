@@ -1,12 +1,13 @@
 <template>
+  <q-btn class="score-button" label="Show scoreboard" color="primary" @click="showScoreBoard = true" />
   <div v-if="!sData.isJudging">
-    <div class="text-h4 question" v-if="sData.hasPlayed">
-      <q-spinner-hourglass color="purple" size="3em" />
+    <div class="text-h5 question" v-if="sData.hasPlayed">
+      <q-spinner-hourglass color="purple" size="2em" />
       <br />
       You have played. <br />
       Waiting for other players to play...
       <br />
-      <q-spinner-hourglass color="purple" size="3em" />
+      <q-spinner-hourglass color="purple" size="2em" />
     </div>
     <Transition name="question">
       <div :key="sData.currentQuestion" class="text-h4 question" id="question">
@@ -25,9 +26,33 @@
     </TransitionGroup>
   </div>
   <Judge v-else />
+
+  <q-dialog v-model="showScoreBoard" persistent :maximized="true" transition-show="slide-up" transition-hide="slide-down">
+    <q-card class="text-white">
+      <q-bar>
+        <q-space />
+
+        <q-btn dense flat icon="close" v-close-popup>
+          <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+        </q-btn>
+      </q-bar>
+
+      <q-card-section>
+        <ScoreBoard />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <style lang="scss">
+.score-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0em 0.5em;
+  margin: 1em;
+}
+
 .question {
   -webkit-user-select: none;
   /* Safari */
@@ -188,17 +213,21 @@ $total: 8;
 </style>
 
 <script>
+import { ref } from 'vue'
 import { socketData, socket } from "../socket";
 import { useQuasar } from 'quasar'
 import Judge from './Judge.vue'
+import ScoreBoard from './ScoreBoard.vue';
 
 export default {
   name: 'Game',
   components: {
     Judge,
+    ScoreBoard
   },
   data: function () {
     return {
+      showScoreBoard: ref(false),
       sData: socketData,
       shareUrl: window.location.origin + "/join-room/" + this.$route.params.roomCode,
       $q: useQuasar(),

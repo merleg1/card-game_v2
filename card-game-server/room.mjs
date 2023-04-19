@@ -85,15 +85,17 @@ export default class Room {
         return this.cardsToJudge.find(c => c.id == id);
     }
 
-    getWinningCard() {
-        let winningCard = null;
+    getWinningCards() {
+        let winningCards = [];
         let winningVotes = 0;
         this.cardsToJudge.forEach(c => {
             if (c.votes > winningVotes) {
                 winningVotes = c.votes;
-                winningCard = c;
+                winningCards = [c];
+            } else if (c.votes == winningVotes) {
+                winningCards.push(c);
             }
         });
-        return winningCard;
+        return winningCards;
     }
 }

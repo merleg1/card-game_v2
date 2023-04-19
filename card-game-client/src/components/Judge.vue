@@ -1,11 +1,11 @@
 <template>
-  <div class="text-h4 question" v-if="sData.hasJudged">
-    <q-spinner-hourglass color="purple" size="3em" />
+  <div class="text-h5 question" v-if="sData.hasJudged">
+    <q-spinner-hourglass color="purple" size="2em" />
     <br />
     You have voted. <br />
     Grab a drink and wait for the other players.
     <br />
-    <q-spinner-hourglass color="purple" size="3em" />
+    <q-spinner-hourglass color="purple" size="2em" />
   </div>
   <swiper :effect="'cards'" :modules="modules" :grabCursor="true" @swiper="onSwiper" @slideChange="onSlideChange">
     <swiper-slide class="judging-card" v-for="card in sData.cardsToJudge" :key="card.id" :id="card.id">
