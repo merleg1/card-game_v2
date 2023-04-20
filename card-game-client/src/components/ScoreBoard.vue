@@ -4,8 +4,8 @@
         <q-toolbar class="text-white">
             <q-toolbar-title>Players</q-toolbar-title>
         </q-toolbar>
-        <q-list class="rounded-borders bg-dark rounded border-p player-list" dense bordered separator>
-            <q-scroll-area class="player-list">
+        <q-list class="rounded-borders bg-dark rounded border-p player-list-board" dense bordered separator>
+            <q-scroll-area class="player-list-board">
                 <q-item v-for="player in orderedPlayers">
                     <q-item-section avatar>
                         <q-avatar color="primary" text-color="white">
@@ -46,7 +46,7 @@
     text-align: center;
 }
 
-.player-list {
+.player-list-board {
     height: 50vh;
 }
 </style>

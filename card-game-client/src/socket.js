@@ -73,7 +73,7 @@ socket.on('judge', (data) => {
                 t = t.replace('_', `<span class="answer-text">${c.text.replaceAll('.', '')}</span>`);
             }
             else {
-                t += ` <span class="question-text">${c.text}</span>`;
+                t += ` <span class="answer-text">${c.text}</span>`;
             }
         });
         socketData.cardsToJudge.push({ id: a.id, text: t });

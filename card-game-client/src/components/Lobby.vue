@@ -15,8 +15,8 @@
         <q-toolbar class="rounded text-white">
             <q-toolbar-title>Players</q-toolbar-title>
         </q-toolbar>
-        <q-list class="rounded-borders bg-dark rounded border-p player-list" dense bordered separator>
-            <q-scroll-area class="player-list">
+        <q-list class="rounded-borders bg-dark rounded border-p player-list-lobby" dense bordered separator>
+            <q-scroll-area class="player-list-lobby">
                 <q-item v-for="player in sData.players">
                     <q-item-section avatar>
                         <q-avatar color="primary" text-color="white">
@@ -79,7 +79,7 @@
     color: #9B61FE;
 }
 
-.player-list {
+.player-list-lobby {
     height: 30vh;
 }
 
