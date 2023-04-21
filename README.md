@@ -1,1 +1,2 @@
-# card-game_v2
+# "Prinzipe öber bord" studio_UxWebmobile2_2023
+Online web card game like "cards against humanity". Create a room and let other players join by sharing a link or a code. When everyone has joined, the admin can start the game. Now select the card that fits best with the question of the round and is the funniest. After all players have played the voting phase starts and everyone can pick their favorite. The player with the most votes gets a point and wins the round. When all rounds are played the person with the most points takes it home. 
