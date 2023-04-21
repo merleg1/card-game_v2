@@ -19,6 +19,6 @@ Requirements: node.js
 7. players get points and a new round starts (you can open the scoreboard at the top right)
 
 # Architecture diagram
-![card-g drawio](https://user-images.githubusercontent.com/91537937/233637982-6b6a0634-b118-4256-a00c-e87d2233b81b.png)
+![card-g drawio (1)](https://user-images.githubusercontent.com/91537937/233638252-e47449c5-f55c-4812-a4a3-8e6d3540521c.png)
 
 # Sequence diagram
