@@ -27,7 +27,7 @@ sequenceDiagram
     participant Client1
     participant Client2
     participant Server
-Client1->>Server:Connect with sessionID from localStorage
-Client1<<-Server:Send session data and userID
+Client1->>Server: Connect with sessionID from localStorage
+Client1<<-Server: Send session data and userID
 
 ```
