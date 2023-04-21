@@ -25,8 +25,8 @@ Requirements: node.js
 ```mermaid
 sequenceDiagram
     participant Client1
-    participant Client2
     participant Server
+    participant Client2
 Client1->>Server: Connect with sessionID from localStorage
 Server->>Client1: Send session data and userID
 Client2->>Server: Connect with sessionID from localStorage
