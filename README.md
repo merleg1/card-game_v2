@@ -41,7 +41,7 @@ Server->>Client1: Send new Round with questionCard, newCardsInHand and round
 Server->>Client2: Send gameStarted
 Server->>Client2: Send new Round with questionCard, newCardsInHand and round
 Client1->>Server: Play cards with cards
-Server->>Client1 Send cardsPlayed or error
+Server->>Client1: Send cardsPlayed or error
 Client2->>Server: Play cards with cards
 Server->>Client2: Send cardsPlayed or error
 Server->>Client1: Send judge with question and cardsToJudge
