@@ -22,3 +22,15 @@ Requirements: node.js
 ![card-g drawio (1)](https://user-images.githubusercontent.com/91537937/233638252-e47449c5-f55c-4812-a4a3-8e6d3540521c.png)
 
 # Sequence diagram
+```mermaid
+sequenceDiagram
+    participant dotcom
+    participant iframe
+    participant viewscreen
+    dotcom->>iframe: loads html w/ iframe url
+    iframe->>viewscreen: request template
+    viewscreen->>iframe: html & javascript
+    iframe->>dotcom: iframe ready
+    dotcom->>iframe: set mermaid data on iframe
+    iframe->>iframe: render mermaid
+```
