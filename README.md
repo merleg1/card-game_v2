@@ -27,35 +27,35 @@ sequenceDiagram
     participant Client1
     participant Client2
     participant Server
-Client1->Server:Connect with sessionID from localStorage
-Client1<-Server:Send session data and userID
-Server<-Client2:Connect with sessionID from localStorage
-Server->Client2:Send session data and userID
-Client1->Server:Create room with nickname and numberOfRounds
-Client1<-Server:Send players and roomJoined with roomId and isAdmin or error
-Server<-Client2:Join room with nickname
-Server->Client2:Send players and roomJoined with roomId and isAdmin or error
-Client1->Server:Start game with roomCode
-Client1<-Server:Send gameStarted or Error (not admin or not enough players)
-Client1<-Server:Send new Round with questionCard, newCardsInHand and round
-Server->Client2:Send gameStarted
-Server->Client2:Send new Round with questionCard, newCardsInHand and round
-Client1->Server:Play cards with cards
-Client1<-Server:Send cardsPlayed or error
-Server<-Client2:Play cards with cards
-Server->Client2:Send cardsPlayed or error
-Client1<-Server:Send judge with question and cardsToJudge
-Server->Client2:Send judge with question and cardsToJudge
-Client1->Server:Vote for card with cardId
-Client1<-Server:Send judged or error
-Server<-Client2:Vote for card with cardId
-Server->Client2:Send judged or error
-Client1<-Server:Send roundEnded with winningPlayerNames
-Client1<-Server:Send players
-Client1<-Server:Send new Round with questionCard, newCardsInHand and round
-Client1<-Server:IF numberOfRounds reached send gameEnded with winnerNames
-Server->Client2:Send roundEnded with winningPlayerNames
-Server->Client2:Send players
-Server->Client2:Send new Round with questionCard, newCardsInHand and round
-Server->Client2:IF numberOfRounds reached send gameEnded with winnerNames
+Client1->>Server:Connect with sessionID from localStorage
+Client1<<-Server:Send session data and userID
+Server<<-Client2:Connect with sessionID from localStorage
+Server->>Client2:Send session data and userID
+Client1->>Server:Create room with nickname and numberOfRounds
+Client1<<-Server:Send players and roomJoined with roomId and isAdmin or error
+Server<<-Client2:Join room with nickname
+Server->>Client2:Send players and roomJoined with roomId and isAdmin or error
+Client1->>Server:Start game with roomCode
+Client1<<-Server:Send gameStarted or Error (not admin or not enough players)
+Client1<<-Server:Send new Round with questionCard, newCardsInHand and round
+Server->>Client2:Send gameStarted
+Server->>Client2:Send new Round with questionCard, newCardsInHand and round
+Client1->>Server:Play cards with cards
+Client1<<-Server:Send cardsPlayed or error
+Server<<-Client2:Play cards with cards
+Server->>Client2:Send cardsPlayed or error
+Client1<<-Server:Send judge with question and cardsToJudge
+Server->>Client2:Send judge with question and cardsToJudge
+Client1->>Server:Vote for card with cardId
+Client1<<-Server:Send judged or error
+Server<<-Client2:Vote for card with cardId
+Server->>Client2:Send judged or error
+Client1<<-Server:Send roundEnded with winningPlayerNames
+Client1<<-Server:Send players
+Client1<<-Server:Send new Round with questionCard, newCardsInHand and round
+Client1<<-Server:IF numberOfRounds reached send gameEnded with winnerNames
+Server->>Client2:Send roundEnded with winningPlayerNames
+Server->>Client2:Send players
+Server->>Client2:Send new Round with questionCard, newCardsInHand and round
+Server->>Client2:IF numberOfRounds reached send gameEnded with winnerNames
 ```
